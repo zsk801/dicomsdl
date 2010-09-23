@@ -1,0 +1,44 @@
+#  -----------------------------------------------------------------------
+#
+#  $Id$
+# 
+#  Copyright 2010, Kim, Tae-Sung. All rights reserved.
+#  See copyright.txt for details
+#
+#  -----------------------------------------------------------------------
+
+cmake_minimum_required (VERSION 2.8)
+
+# ------------------------------------------------------------------------
+# User options
+
+#SET(CMAKE_BUILD_TYPE Release)
+SET(CMAKE_INSTALL_PREFIX "./build")
+
+OPTION(BUILD_SHARED_LIBS "Build dicomsdl with shared libraries." OFF)
+
+OPTION(USE_DISPLAY_DEBUGINFO "Use display debugging information" OFF)
+IF (USE_DISPLAY_DEBUGINFO)
+	SET(__DEBUG__ ON)
+ENDIF (USE_DISPLAY_DEBUGINFO)
+
+OPTION(USE_OPJ_CODEC
+		"Use openjpeg to decode/encode jpeg2000 images." ON)
+OPTION(USE_IJG_CODEC
+		"Use IJG library to decode/encode jpeg images." ON)
+OPTION(USE_IPP_CODEC
+		"Use ipp library to decode/encode jpeg/jpeg2000 images." OFF)
+OPTION(USE_LT_CODEC
+		"Use leadtools to decode/encode jpeg/jpeg2000 images." OFF)
+OPTION(USE_ZLIB
+		"Use zlib to decode/encode deflated explicit LE images." ON)
+OPTION(USE_MINIZIP
+		"Use minizip to read dicomzip file." ON)
+
+OPTION(BUILD_PYTHON_EXT
+		"Build Python Extension." OFF)
+
+
+# ------------------------------------------------------------------------
+
+ADD_SUBDIRECTORY(src)

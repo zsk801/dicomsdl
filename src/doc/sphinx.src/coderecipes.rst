@@ -1,0 +1,17 @@
+Code Recipes
+============
+
+Opening a DICOM File
+--------------------
+
+
+Getting Values
+--------------
+
+
+Setting Values
+--------------
+
+
+Write to File
+-------------
