@@ -1,5 +1,7 @@
 %module dicom
 
+// DICOMSDL_VER @dicomsdl_version@
+
 %include "@INCLUDE_TYPEMAP@"
 %include "typemaps.i"
 %include "std_string.i"
@@ -404,8 +406,8 @@
 
 //------------------------------------------------------------------------
 
-%include "../../lib/dicomcfg.h"
-%include "../../lib/dicom.h"
+%include "dicomcfg.h"
+%include "dicom.h"
 
 
 // wrappers written in python codes --------------------------------------

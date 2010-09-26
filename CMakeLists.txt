@@ -9,6 +9,8 @@
 
 cmake_minimum_required (VERSION 2.8)
 
+SET (dicomsdl_version 0.74)
+
 # ------------------------------------------------------------------------
 # User options
 
@@ -35,9 +37,11 @@ OPTION(USE_ZLIB
 OPTION(USE_MINIZIP
 		"Use minizip to read dicomzip file." ON)
 
-OPTION(BUILD_PYTHON_EXT
+OPTION(PYTHON_BUILD_EXT
 		"Build Python Extension." OFF)
-OPTION(BUILD_PYTHON_EXT_INSTALLER
+OPTION(PYTHON_INSTALL_EXT
+		"Install Python Extension." OFF)
+OPTION(PYTHON_BUILD_EXT_INSTALLER
 		"Build Python Extension Installer." OFF)
 
 

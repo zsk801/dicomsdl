@@ -21,6 +21,9 @@ del /s *.resource.txt
 del src\example\changetsuid
 del src\example\dicomfiledump
 del src\example\makedicomdir
+del src\wrapper\python\dummy_proj
+del src\wrapper\python\MANIFEST
+
 
 del /s *.vcproj*
 del /s *.sln
@@ -45,6 +48,8 @@ rmdir /s/q src\ext\zlib\CMakeFiles
 rmdir /s/q src\lib\CMakeFiles
 rmdir /s/q src\wrapper\CMakeFiles
 rmdir /s/q src\wrapper\python\CMakeFiles
+rmdir /s/q src\wrapper\python\dicomsdl-0.72
+
 
 del src\ext\ijg\8\*.c
 del src\ext\ijg\8\*.h

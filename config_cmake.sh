@@ -3,10 +3,13 @@
 opt=
 
 # ON or OFF
-opt="$opt -DBUILD_PYTHON_EXT=ON"
+opt="$opt -DPYTHON_BUILD_EXT=ON"
 
 # ON or OFF
-opt="$opt -DBUILD_PYTHON_EXT_INSTALLER=ON"
+opt="$opt -DPYTHON_INSTALL_EXT=ON"
+
+# ON or OFF
+opt="$opt -DPYTHON_BUILD_EXT_INSTALLER=OFF"
 
 # Release or Debug
 opt="$opt -DCMAKE_BUILD_TYPE=Release"

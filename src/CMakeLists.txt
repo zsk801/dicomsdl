@@ -147,9 +147,9 @@ INSTALL (TARGETS dicomsdl
 # ------------------------------------------------------------------------
 # Build Wrapper
 
-IF (BUILD_PYTHON_EXT)
+IF (PYTHON_BUILD_EXT)
 	ADD_SUBDIRECTORY(wrapper)
-ENDIF (BUILD_PYTHON_EXT)
+ENDIF (PYTHON_BUILD_EXT)
 
 # ------------------------------------------------------------------------
 # Build Examples

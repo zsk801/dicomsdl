@@ -15,13 +15,14 @@ configure_file (
 
 FIND_PACKAGE(SWIG REQUIRED)
 INCLUDE(${SWIG_USE_FILE})
+
 FIND_PACKAGE(PythonInterp) 
 FIND_PACKAGE(PythonLibs)
 INCLUDE_DIRECTORIES(${PYTHON_INCLUDE_PATH})
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR})
-SET(CMAKE_SWIG_FLAGS "")
 
 SET_SOURCE_FILES_PROPERTIES(dicom.i PROPERTIES CPLUSPLUS ON)
+SET_SOURCE_FILES_PROPERTIES(dicom.i PROPERTIES SWIG_FLAGS -I../../lib)
 SWIG_ADD_MODULE(dicom python dicom.i)
 SWIG_LINK_LIBRARIES(dicom ${PYTHON_LIBRARIES} dicomsdl)
 
@@ -36,10 +37,16 @@ WORKING_DIRECTORY . COMMENT "Creating tags" VERBATIM)
 
 INSTALL (FILES ${PYEXT_FILES} DESTINATION bin)
 
-IF (BUILD_PYTHON_EXT_INSTALLER)
-	# Creating python module installer
-	add_executable (dummy_proj dummy.c)
+# Install python module
+add_executable (dummy_proj dummy.c)
 
+IF (PYTHON_INSTALL_EXT)
+	add_custom_command (TARGET dummy_proj POST_BUILD
+		COMMAND ${PYTHON_EXECUTABLE} setup.py install
+		COMMENT "Install python module" VERBATIM)
+ENDIF (PYTHON_INSTALL_EXT)
+
+IF (PYTHON_BUILD_EXT_INSTALLER)
 	IF (WIN32)
 		add_custom_command (TARGET dummy_proj POST_BUILD
 			COMMAND ${PYTHON_EXECUTABLE} setup.py build bdist_wininst
@@ -49,5 +56,4 @@ IF (BUILD_PYTHON_EXT_INSTALLER)
 			COMMAND ${PYTHON_EXECUTABLE} setup.py build bdist_rpm
 			COMMENT "Creating python module installer" VERBATIM)
 	ENDIF (WIN32)
-	
-ENDIF (BUILD_PYTHON_EXT_INSTALLER)
+ENDIF (PYTHON_BUILD_EXT_INSTALLER)
