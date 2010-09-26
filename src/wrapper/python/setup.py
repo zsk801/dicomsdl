@@ -8,13 +8,13 @@ ext = Extension(
                 swig_opts=['-c++'],
                 include_dirs=['../../lib'],
                 library_dirs=['../..'],
-                libraries=['dicomsdk'],
+                libraries=['dicomsdl'],
                 language='c++'
             )
 
 setup(
       name='dicomsdl',
-      version='0.01',
+      version='0.72',
       description='DICOM Software Development Library',
       author='Kim, Tae-Sung',
       author_email='taesung.angel@gmail.com',

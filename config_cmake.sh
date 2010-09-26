@@ -5,6 +5,9 @@ opt=
 # ON or OFF
 opt="$opt -DBUILD_PYTHON_EXT=ON"
 
+# ON or OFF
+opt="$opt -DBUILD_PYTHON_EXT_INSTALLER=ON"
+
 # Release or Debug
 opt="$opt -DCMAKE_BUILD_TYPE=Release"
 

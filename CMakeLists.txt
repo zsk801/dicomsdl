@@ -37,6 +37,8 @@ OPTION(USE_MINIZIP
 
 OPTION(BUILD_PYTHON_EXT
 		"Build Python Extension." OFF)
+OPTION(BUILD_PYTHON_EXT_INSTALLER
+		"Build Python Extension Installer." OFF)
 
 
 # ------------------------------------------------------------------------

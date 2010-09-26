@@ -10,7 +10,7 @@
 #ifndef __DICOMCFG_H__
 #define __DICOMCFG_H__
 
-#define __DEBUG__
+/* #undef __DEBUG__ */
 
 /* ---------------------------------------------------------------------*/
 
