@@ -468,11 +468,11 @@ def __dicom_dataset___getitem__(self, key):
 	if e.is_valid():
 		return e.get_value()
 	else:
-		if self.vr in [VR_SL, VR_SS, VR_UL, VR_US, VR_AT, VR_IS]:
+		if e.vr in [VR_SL, VR_SS, VR_UL, VR_US, VR_AT, VR_IS]:
 			return e.to_int() # 0
-		elif self.vr in [VR_FL, VR_FD, VR_DS]:
+		elif e.vr in [VR_FL, VR_FD, VR_DS]:
 			return e.to_double() # 0.0
-		elif self.vr in [VR_SQ, VR_OFFSET]:
+		elif e.vr in [VR_SQ, VR_OFFSET]:
 			return None
 		else:
 			return e.to_string() # None

@@ -111,6 +111,13 @@ void dicomfile::_read_from_stream(opttype opt)
 
 	if (ret != DICOM_OK)
 		throw (errtype)ret;
+
+	if (number_of_elements() == 0) {
+		build_error_message("in dicomfile::_read_from_stream(): "
+				"dicomfile object is empty; may be not a dicom file");
+
+		throw (errtype)DICOM_ERROR;
+	}
 }
 
 DLLEXPORT dicomfile* open_dicomfile(char *filename, opttype opt)

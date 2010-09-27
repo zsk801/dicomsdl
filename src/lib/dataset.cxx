@@ -302,7 +302,7 @@ int dataset::save_a(char **val_a, int *len_a, opttype opt)
 				deflate_dicomfile_a(*val_a, *len_a,
 						offset, -1, &def_val, &def_len);
 				if(!def_val) {
-					build_error_message("in data::save_a(): "
+					build_error_message("in dataset::save_a(): "
 						"cannot deflate dicomfile object");
 					throw DICOM_DEFLATE_ERROR;
 				}
