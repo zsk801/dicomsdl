@@ -3,10 +3,10 @@
 opt=
 
 # ON or OFF
-opt="$opt -DPYTHON_BUILD_EXT=ON"
+opt="$opt -DPYTHON_BUILD_EXT=OFF"
 
 # ON or OFF
-opt="$opt -DPYTHON_INSTALL_EXT=ON"
+opt="$opt -DPYTHON_INSTALL_EXT=OFF"
 
 # ON or OFF
 opt="$opt -DPYTHON_BUILD_EXT_INSTALLER=OFF"
@@ -15,10 +15,10 @@ opt="$opt -DPYTHON_BUILD_EXT_INSTALLER=OFF"
 opt="$opt -DCMAKE_BUILD_TYPE=Release"
 
 # ON or OFF
-opt="$opt -DUSE_IJG_CODEC=OFF"
+opt="$opt -DUSE_IJG_CODEC=ON"
 
 # ON or OFF
-opt="$opt -DUSE_OPJ_CODEC=OFF"
+opt="$opt -DUSE_OPJ_CODEC=ON"
 
 # ON or OFF
 opt="$opt -DUSE_DISPLAY_DEBUGINFO=OFF"
