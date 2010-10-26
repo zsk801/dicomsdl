@@ -25,6 +25,6 @@ opt="$opt -DUSE_DISPLAY_DEBUGINFO=OFF"
 
 echo OPTIONS ARE = $opt
 
-opt="$opt -D PYTHON_INCLUDE_DIR:STRING=/opt/python26/include/python2.6"
-opt="$opt -D PYTHON_LIBRARY:STRING=/opt/python26/lib/libpython2.6.so"
+#opt="$opt -D PYTHON_INCLUDE_DIR:STRING=/opt/python26/include/python2.6"
+#opt="$opt -D PYTHON_LIBRARY:STRING=/opt/python26/lib/libpython2.6.so"
 cmake -G"Unix Makefiles"  $opt .

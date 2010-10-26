@@ -58,6 +58,10 @@
   #define ftello64 ftell
   #define fseeko64 fseek
  #endif
+#else
+#define fopen64 fopen
+#define ftello64 ftell
+#define fseeko64 fseek
 #endif
 #endif
 
