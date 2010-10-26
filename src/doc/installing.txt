@@ -26,57 +26,50 @@ Compiling
 Using VisualStudio C++ compilers
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-General command lines for build libraries are like this
+1. edit :file:`config_cmake.bat` and run it.
+2. do `nmake.exe install`
+
+GCC (Linux or OSX)
+^^^^^^^^^^^^^^^^^^
+
+1. edit :file:`config_cmake.sh` and run it.
+2. do `make install`
+
+Note on build rpm file in Linux
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+You may get an error message like this if you try to build rpm installer
+under RedHat or CentOS linux. 
 
 ::
 
-	command prompt> cd [DICOMSDL root directory]
-	....\dicomsdl> cmake -G"NMake Makefiles" [OPTION] .
-	....\dicomsdl> nmake install
+	error: Installed (but unpackaged) file(s) found:
+	   ... .../site-packages/dicom.pyo
+   
+One of the workarounds to revolve this problem is modifying
+:file:`[pythondir]/distutils/command/build_rpm.py`.
 
-.. option:: -DCMAKE_BUILD_TYPE=[Release|Debug]
+	1. find lines like this in :file:`[pythondir]/distutils/command/build_rpm.py`.
 
-	Build `Release` or `Debug` mode library.
-	
-.. option:: -DBUILD_SHARED_LIBS=ON
+		::
+		
+			   ('install', 'install_script',
+			    ("%s install "
+			     "--root=$RPM_BUILD_ROOT"
+	     
+	2. add `-O1` option
 
-	Build a shared library.
-	
-.. option:: -DBUILD_PYTHON_EXT=ON
+		::
+		
+			   ('install', 'install_script',
+			    ("%s install -O1 "
+			     "--root=$RPM_BUILD_ROOT"
 
-	Build python extension. :program:`python` and :program:`swig.exe`
-	should be installed. :program:`swig.exe` should be found in command line path. 
+ref. https://bugzilla.redhat.com/show_bug.cgi?id=530685
 
-Build a static DICOMSDL library.
+Linking DICOMSDL into Your Projects
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-::
-
-	command prompt> cmake -G"NMake Makefiles" -DCMAKE_BUILD_TYPE=Release .
-	command prompt> nmake install
-	
-
-Build a python module. 
-
-::
-
-	command prompt> cmake -G"NMake Makefiles" -DBUILD_PYTHON_EXT=ON -DCMAKE_BUILD_TYPE=Release .
-	command prompt> nmake install
-
-Build a shared DICOMSDL library 
-
-:: 
-
-	command prompt> cmake -G"NMake Makefiles" -DBUILD_SHARED_LIBS=ON  .
-	command prompt> nmake install
-
-Compiled binaries will go into :file:`.\build` directory. Includes
-:file:`dicom.h`, :file:`dicomcfg.h` and :file:`dicomsdl.lib` into your project
+Compiled binaries will go into :file:`./build` directory. Includes
+:file:`dicom.h`, :file:`dicomcfg.h`,  :file:`dicomsdl.lib`, ... into your project
 and just add line ``#include "dicom.h"`` into your program codes.
-
-Using GCC
-^^^^^^^^^
-
-::
-
-	# cd [DICOMSDL root directory]
-	# 

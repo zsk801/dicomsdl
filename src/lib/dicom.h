@@ -535,7 +535,7 @@ struct DLLEXPORT dataelement {
 
 	// get string type value ---------------------------------------------
 
-	void to_string_a(char **val_a, int *len_a);
+	void to_string_a(char **val_a, int *len_a=NULL);
 	std::string to_string(char* defaultvalue="");
 	inline operator std::string () { return to_string(); };
 

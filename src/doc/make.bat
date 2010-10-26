@@ -1,5 +1,5 @@
 conv_to_sphinx.py
-set BUILDDIR=..\..\..\dicomsdl.doc
+set BUILDDIR=..\..\build\doc
 set SOURCEDIR=sphinx.src
 
 
