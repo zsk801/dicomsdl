@@ -269,6 +269,8 @@ A :cpp:class:`dicom::dicomelement` objects has several functions name like
 	
 	
 	/*** get a value in banary form
+
+
 Setting Values
 --------------
 
