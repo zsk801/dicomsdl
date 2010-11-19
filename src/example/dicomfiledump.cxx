@@ -21,6 +21,7 @@ int main(int argc, char **argv)
 
 	if (df) {
 		puts(df->dump_string().c_str());
+		delete df;
 	} else {
 		printf("%s\n", dicom::get_error_message());
 	}

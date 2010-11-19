@@ -214,7 +214,7 @@ uint8 *instream::read(int n)
 		uint8 *value = p;
 		p += n;
 		while (basestream->_q < p) {
-			long nread = in->read(basestream->_q,
+			long nread = basestream->in->read(basestream->_q,
 						basestream->q - basestream->_q >= NBYTES_TO_READ?
 						NBYTES_TO_READ:
 						basestream->q - basestream->_q
@@ -236,9 +236,9 @@ uint8 *instream::read(int n)
 			this, basestream->in->get_filename());
 
 #endif
-				in->close();
-				delete in;
-				in = NULL;
+				basestream->in->close();
+				delete basestream->in;
+				basestream->in = NULL;
 			}
 		}
 
