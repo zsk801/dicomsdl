@@ -14,7 +14,7 @@ delete CMakeCache.txt
 delete CMakeFiles
 delete Makefile
 delete *.cmake
-
+delete CTestTestfile.cmake
 delete dicom.i
 delete *.rst
 
