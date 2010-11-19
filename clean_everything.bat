@@ -19,6 +19,7 @@ del /s *.manifest
 del /s *.manifest.res
 del /s *.resource.txt
 del /s *.rst
+del /s *.CTestTestfile.cmake
 del src\example\changetsuid
 del src\example\dicomfiledump
 del src\example\makedicomdir
