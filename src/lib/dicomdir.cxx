@@ -568,7 +568,7 @@ int dicomdir::add_dicomfile(char *filename, char *ref_file_id)
 	dicomfile *df = NULL;
 	int ret;
 
-	df = open_dicomfile(filename, OPT_LOAD_PARTIAL_FILE | largest_tag);
+	df = open_dicomfile(filename, OPT_LOAD_PARTIAL_FILE, largest_tag);
 	if (df) {
 		ret = add_dicomfile(df, ref_file_id);
 		delete df;

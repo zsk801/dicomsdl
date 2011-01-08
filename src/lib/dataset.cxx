@@ -24,7 +24,7 @@
 namespace dicom { //------------------------------------------------------
 
 int dataset::load(void *stream, dicomfile* dfobj,
-				  uidtype _tsuid, opttype opt)
+				  uidtype _tsuid, opttype opt, optarg arg)
 {
 	instream* s;
 	dataelement *e;
@@ -40,7 +40,7 @@ int dataset::load(void *stream, dicomfile* dfobj,
 	s = (instream *)stream;
 	tsuid = _tsuid;
 
-	loaduntil = opt & 0xffffffff;
+	loaduntil = arg;
 	if (loaduntil == 0) loaduntil = 0xffffffff;
 
 	dfobj->mark_dataset_offset(s->curr_offset()-8, this);
