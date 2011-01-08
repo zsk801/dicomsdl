@@ -37,7 +37,6 @@ struct dicomdir;
 
 typedef uint32 tagtype;
 typedef uint16 vrtype;
-typedef uint64 opttype;
 
 #define make_tag(gggg,eeee)	(((gggg)<< 16) + (eeee))
 #define group_in_tag(tag)	((uint16)((tag) >> 16))
@@ -104,29 +103,32 @@ typedef enum {
 	DICOM_DECODE_ERROR = -12,
 	DICOM_WRITE_ERROR = -13,
 	DICOM_INTERNAL_ERROR = -99
-
 } errtype;
 
 
-const opttype OPT_LOAD_PARTIAL_FILE				= 0x00100000000L;
-const opttype OPT_LOAD_CONTINUE_ON_ERROR		= 0x00200000000L;
-const opttype OPT_LOAD_DONOT_COPY_DATA			= 0x00400000000L;
+typedef uint32 opttype;
+typedef uint32 optarg;
 
-static const opttype default_load_opt = 0
-		//| OPT_LOAD_PARTIAL_FILE | TAG
-		//| OPT_LOAD_CONTIUE_ON_ERROR
+const opttype OPT_DEFAULT						= 0x0000;
+const opttype OPT_LOAD_PARTIAL_FILE				= 0x0001;
+const opttype OPT_LOAD_CONTINUE_ON_ERROR		= 0x0002;
+const opttype OPT_LOAD_DONOT_COPY_DATA			= 0x0004;
+
+const opttype OPT_SAVE_WITHOUT_PREAMBLE			= 0x0100;
+const opttype OPT_SAVE_WITHOUT_METAINFO			= 0x0200;
+const opttype OPT_SAVE_IMPLICIT_SQ_LENGTH		= 0x0400;
+const opttype OPT_SAVE_IMPLICIT_DATASET_LENGTH	= 0x0800;
+const opttype OPT_SAVE_CALC_GROUPLENGTH			= 0x1000;
+const opttype OPT_SAVE_BASIC_OFFSET_TABLE		= 0x2000;
+const opttype __OPT_SAVE_DATASET_IN_SEQUENCE	= 0x8000;
+
+static const opttype default_load_opt = OPT_DEFAULT
+		//| OPT_LOAD_PARTIAL_FILE
+		//| OPT_LOAD_CONTINUE_ON_ERROR
 		//| OPT_LOAD_DONOT_COPY_DATA
 		;
 
-const opttype OPT_SAVE_WITHOUT_PREAMBLE			= 0x01000000000L;
-const opttype OPT_SAVE_WITHOUT_METAINFO			= 0x02000000000L;
-const opttype OPT_SAVE_IMPLICIT_SQ_LENGTH		= 0x04000000000L;
-const opttype OPT_SAVE_IMPLICIT_DATASET_LENGTH	= 0x08000000000L;
-const opttype OPT_SAVE_CALC_GROUPLENGTH			= 0x10000000000L;
-const opttype OPT_SAVE_BASIC_OFFSET_TABLE		= 0x20000000000L;
-const opttype __OPT_SAVE_DATASET_IN_SEQUENCE	= 0x80000000000L;
-
-static const opttype default_save_opt = 0
+static const opttype default_save_opt = OPT_DEFAULT
 		//| OPT_SAVE_WITHOUT_PREAMBLE
 		//| OPT_SAVE_WITHOUT_METAINFO
 		//| OPT_SAVE_IMPLICIT_SQ_LENGTH
@@ -381,7 +383,8 @@ struct DLLEXPORT dataset {
 	// return DICOM_OK or DICOM_DEFLATED_FILEIMAGE
 	// throw error string on error
 	int load(
-		void *instream, dicomfile* dfobj, uidtype tsuid, opttype opt=0L);
+		void *instream, dicomfile* dfobj, uidtype tsuid,
+		opttype opt=default_load_opt, optarg arg=0);
 
 	int save_a(char **val_a, int *len_a, opttype opt=default_save_opt);
 	int _save(void *ostream, uidtype tsuid, opttype opt);
@@ -457,9 +460,11 @@ private:
  */
 
 DLLEXPORT dicomfile* open_dicomfile
-			(char *filename, opttype opt=default_load_opt);
+			(char *filename,
+			 opttype opt=default_load_opt, optarg arg=0);
 DLLEXPORT dicomfile* open_dicomfile_from_memory
-			(char *data, int datasize, opttype opt=default_load_opt);
+			(char *data, int datasize,
+			 opttype opt=default_load_opt, optarg arg=0);
 DLLEXPORT void close_dicomfile(dicomfile *df);
 
 struct DLLEXPORT dicomfile: public dataset {
@@ -467,9 +472,11 @@ struct DLLEXPORT dicomfile: public dataset {
 
 	// read dicom file ---------------------------------------------------
 
-	int load_from_file(char *filename, opttype opt=default_load_opt);
+	int load_from_file(char *filename,
+			opttype opt=default_load_opt, optarg arg=0);
 	int load_from_data
-			(char *data, int datasize, opttype opt=default_load_opt);
+			(char *data, int datasize,
+			opttype opt=default_load_opt, optarg arg=0);
 
 	int save_to_file(char *filename, opttype opt=default_save_opt);
 	int save_to_memory_a
@@ -493,7 +500,7 @@ struct DLLEXPORT dicomfile: public dataset {
 	char* get_filename();
 
 private:
-	void _read_from_stream(opttype opt);
+	void _read_from_stream(opttype opt, optarg arg);
 };
 
 /* -----------------------------------------------------------------------
@@ -682,9 +689,10 @@ struct DLLEXPORT sequence {
  * struct DICOMDIR
  */
 
-DLLEXPORT dicomdir* open_dicomdir(char *filename, opttype opt=0L);
+DLLEXPORT dicomdir* open_dicomdir
+				(char *filename, opttype opt=default_load_opt);
 DLLEXPORT dicomdir* open_dicomdir_from_memory
-				(char *data, int datasize, opttype opt=0L);
+				(char *data, int datasize, opttype opt=default_load_opt);
 DLLEXPORT void close_dicomdir(dicomdir *df);
 
 // implementing a directory record
@@ -715,8 +723,10 @@ struct DLLEXPORT dicomdir {
 	dicomfile *df;
 	dirrec_t *root_dirrec;
 
-	int load_from_file(char *filename, opttype opt=0L);
-	int load_from_data(char *data, int datasize, opttype opt=0L);
+	int load_from_file
+			(char *filename, opttype opt=default_load_opt);
+	int load_from_data
+			(char *data, int datasize, opttype opt=default_load_opt);
 
 	void save_to_file(char *filename, opttype opt=default_save_opt);
 	void save_to_memory_a

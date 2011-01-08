@@ -33,7 +33,7 @@ dicomfile::dicomfile(char *data, int datasize)
 	}
 };
 
-int dicomfile::load_from_file(char *filename, opttype opt)
+int dicomfile::load_from_file(char *filename, opttype opt, optarg arg)
 {
 #ifdef __DEBUG__
 	debug_message("dicomfile{%p}::load_from_file(%s)\n",
@@ -42,7 +42,7 @@ int dicomfile::load_from_file(char *filename, opttype opt)
 	try {
 		instream *s = new instream(filename);
 		stream = (void *)s;
-		_read_from_stream(opt);
+		_read_from_stream(opt, arg);
 
 		long ptrdiff = s->free_unread_data();
 		if (ptrdiff) realloc_ptr(ptrdiff);
@@ -58,7 +58,7 @@ int dicomfile::load_from_file(char *filename, opttype opt)
 	}
 }
 
-int dicomfile::load_from_data(char *data, int datasize, opttype opt)
+int dicomfile::load_from_data(char *data, int datasize, opttype opt, optarg arg)
 {
 #ifdef __DEBUG__
 	debug_message("dicomfile{%p}::load_from_data(%p, %d, %016llx)\n",
@@ -70,7 +70,7 @@ int dicomfile::load_from_data(char *data, int datasize, opttype opt)
 				(opt & OPT_LOAD_DONOT_COPY_DATA) != OPT_LOAD_DONOT_COPY_DATA // copydata
 		);
 		stream = (void *)s;
-		_read_from_stream(opt);
+		_read_from_stream(opt, arg);
 
 		if (!(opt & OPT_LOAD_DONOT_COPY_DATA)) { // copydata
 			long ptrdiff = s->free_unread_data();
@@ -89,7 +89,7 @@ int dicomfile::load_from_data(char *data, int datasize, opttype opt)
 	}
 }
 
-void dicomfile::_read_from_stream(opttype opt)
+void dicomfile::_read_from_stream(opttype opt, optarg arg)
 {
 	instream *s = (instream *)(this->stream);
 
@@ -98,7 +98,7 @@ void dicomfile::_read_from_stream(opttype opt)
 		s->unread(128+4); // preamble in DICOM PART 10 FILE is omitted
 
 	int ret;
-	ret = load(s, this, UID_EXPLICIT_VR_LITTLE_ENDIAN, opt);
+	ret = load(s, this, UID_EXPLICIT_VR_LITTLE_ENDIAN, opt, arg);
 	if (ret == DICOM_DEFLATED_FILEIMAGE) {
 		int offset = get_dataelement(0x00020000)->to_int(0)
 				+ 132 // Bramble size
@@ -120,10 +120,10 @@ void dicomfile::_read_from_stream(opttype opt)
 	}
 }
 
-DLLEXPORT dicomfile* open_dicomfile(char *filename, opttype opt)
+DLLEXPORT dicomfile* open_dicomfile(char *filename, opttype opt, optarg arg)
 {
 	dicomfile *df = new dicomfile();
-	int ret = df->load_from_file(filename, opt);
+	int ret = df->load_from_file(filename, opt, arg);
 	if ((ret == DICOM_OK) ||
 		((opt & OPT_LOAD_CONTINUE_ON_ERROR) && df->number_of_elements()))
 		return df;
@@ -134,10 +134,10 @@ DLLEXPORT dicomfile* open_dicomfile(char *filename, opttype opt)
 }
 
 DLLEXPORT dicomfile* open_dicomfile_from_memory
-				(char *data, int datasize, opttype opt)
+				(char *data, int datasize, opttype opt, optarg arg)
 {
 	dicomfile *df = new dicomfile();
-	int ret = df->load_from_data(data, datasize, opt);
+	int ret = df->load_from_data(data, datasize, opt, arg);
 	if ((ret == DICOM_OK) ||
 		((opt & OPT_LOAD_CONTINUE_ON_ERROR) && df->number_of_elements()))
 		return df;
