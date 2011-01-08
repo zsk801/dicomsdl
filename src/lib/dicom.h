@@ -536,7 +536,7 @@ struct DLLEXPORT dataelement {
 	// get string type value ---------------------------------------------
 
 	void to_string_a(char **val_a, int *len_a=NULL);
-	std::string to_string(char* defaultvalue="");
+	std::string to_string(const char* defaultvalue="");
 	inline operator std::string () { return to_string(); };
 
 	// get raw value ----------------------------------------------------
@@ -603,7 +603,7 @@ struct DLLEXPORT dataelement {
 
 	// set string type value(s) ------------------------------------------
 
-	void from_string(char *str);
+	void from_string(const char *str);
 	void from_string(std::string &s)
 		{ from_string((char *)(s.c_str())); };
 
@@ -619,9 +619,9 @@ struct DLLEXPORT dataelement {
 
 	// set raw type value(s) ---------------------------------------------
 
-	void from_data(char *data, int datasize);
+	void from_data(const char *data, int datasize);
 
-	inline void set_value(char *data, int datasize)
+	inline void set_value(const char *data, int datasize)
 		{ from_data(data, datasize); };
 
 	// -------------------------------------------------------------------
@@ -704,7 +704,7 @@ struct dirrec_t {
 	// if own_dataset is true, ~dirrec_t() should delete dataset
 	bool own_dataset;
 
-	void set_dirrec_type(char *s);
+	void set_dirrec_type(const char *s);
 	dirrec_t();
 	~dirrec_t();
 };
@@ -751,16 +751,16 @@ DLLEXPORT void reset_tags_for_dicomdir();
  */
 
 DLLEXPORT vrtype get_tag_vr (tagtype tag);
-DLLEXPORT char* get_tag_name (tagtype tag);
-DLLEXPORT char* get_tag_keyword (tagtype tag);
+DLLEXPORT const char* get_tag_name (tagtype tag);
+DLLEXPORT const char* get_tag_keyword (tagtype tag);
 DLLEXPORT tagtype find_tag(char *keyword);
 
-DLLEXPORT uidtype uidvalue_to_uid (char *uidvalue);
-DLLEXPORT char *uid_to_uidvalue (uidtype uid);
-DLLEXPORT char *uidvalue_to_uidname (char *uidvalue);
-DLLEXPORT char *uid_to_uidname (uidtype uid);
+DLLEXPORT uidtype uidvalue_to_uid (const char *uidvalue);
+DLLEXPORT const char *uid_to_uidvalue (uidtype uid);
+DLLEXPORT const char *uidvalue_to_uidname (const char *uidvalue);
+DLLEXPORT const char *uid_to_uidname (uidtype uid);
 
-DLLEXPORT char *get_vr_repr (vrtype vr);
+DLLEXPORT const char *get_vr_repr (vrtype vr);
 
 typedef void (*logfunc)(char *msg);
 DLLEXPORT void set_debug_logger(logfunc);
@@ -769,9 +769,9 @@ DLLEXPORT void set_error_logger(logfunc);
 
 DLLEXPORT char *get_error_message();
 
-DLLEXPORT void debug_message(char * format, ...);
-DLLEXPORT void error_message(char * format, ...);
-DLLEXPORT void warning_message(char * format, ...);
+DLLEXPORT void debug_message(const char * format, ...);
+DLLEXPORT void error_message(const char * format, ...);
+DLLEXPORT void warning_message(const char * format, ...);
 
 DLLEXPORT int use_decoder(uidtype tsuid, char *codec_name);
 DLLEXPORT int use_encoder(uidtype tsuid, char *codec_name);

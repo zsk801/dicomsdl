@@ -53,7 +53,7 @@ DLLEXPORT void reset_tags_for_dicomdir()
 
 // -----------------------------------------------------------------------
 
-list_pchar_t* get_tags_for_dicomdir(char *drtype)
+list_pchar_t* get_tags_for_dicomdir(const char *drtype)
 {
 	return _tags.get_tags(drtype);
 }
@@ -119,9 +119,9 @@ debug_message("taglist_t{%p}::reset_tags() - "
 	add_tags((char **)default_tag_list_for_dicomdir);
 }
 
-list_pchar_t* dicomdir_taglist_t::get_tags(char *drtype)
+list_pchar_t* dicomdir_taglist_t::get_tags(const char *drtype)
 {
-	map_pchar_t::iterator it = taglist.find(drtype);
+	map_pchar_t::iterator it = taglist.find((char *)drtype);
 	if (it != taglist.end())
 		return &(it->second);
 	else
@@ -379,7 +379,7 @@ void dicomdir::analyze_directory_records(dirrec_t* base_dir, dataset *ds)
 
 // directory record structure --------------------------------------------
 
-void dirrec_t::set_dirrec_type(char *s)
+void dirrec_t::set_dirrec_type(const char *s)
 {
 	strncpy(dirrec_type, s, 20);
 	dirrec_type[19] = '\0';
@@ -403,7 +403,7 @@ dirrec_t::~dirrec_t() {
 
 dirrec_t* add_lowlevdir
 	(dicomfile *df, dirrec_t *base_dirrec,
-	 char *dirrec_type, std::string key)
+	 const char *dirrec_type, std::string key)
 {
 	char *val; int len;
 	std::map<std::string, dirrec_t *>::iterator r;
@@ -731,7 +731,7 @@ void dicomdir::save_to_memory_a
 void dicomdir::_dump(dirrec_t* r, std::string key, std::string prefix) {
 	printf("%sTYPE [%s]\n", prefix.c_str(), r->dirrec_type);
 	if (r->ds)
-		printf(r->ds->dump_string(prefix+"  ").c_str());
+		printf("%s", r->ds->dump_string(prefix+"  ").c_str());
 
 	std::map<std::string, dirrec_t *>::iterator it;
 	for (it = r->lowlevdir.begin(); it != r->lowlevdir.end(); it++) {

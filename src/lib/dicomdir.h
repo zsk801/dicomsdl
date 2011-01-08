@@ -37,7 +37,7 @@ struct dicomdir_taglist_t {
 	void add_tags(char **drtype_taglist);
 
 	// get tag list for a directory record type
-	list_pchar_t* get_tags(char *drtype);
+	list_pchar_t* get_tags(const char *drtype);
 
 	void reset_tags();
 	void free_tags();

@@ -86,7 +86,7 @@ int opj_codec_encoder(uidtype tsuid,
 
 	opj_set_default_encoder_parameters(&parameters);
 
-	parameters.cp_comment = "enc with opj";
+	parameters.cp_comment = (char *)"enc with opj";
 	parameters.tcp_mct = pi->ncomps == 3 ? 1 : 0;
 
 	if (tsuid == UID_JPEG_2000_IMAGE_COMPRESSION_LOSSLESS_ONLY)

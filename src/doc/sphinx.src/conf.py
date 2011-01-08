@@ -104,7 +104,7 @@ pygments_style = 'sphinx'
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-html_theme = 'default'
+html_theme = 'haiku'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -191,7 +191,7 @@ htmlhelp_basename = 'DICOMSoftwareDevelopmentLibrarydoc'
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('index', 'DICOMSoftwareDevelopmentLibrary.tex', u'DICOM Software Development Library Documentation',
+  ('index', 'DICOMSDLdoc.tex', u'DICOM Software Development Library Documentation',
    u'Kim, Tae-Sung', 'manual'),
 ]
 
@@ -249,7 +249,7 @@ pdf_documents = [
 ('index', u'DICOMSDL', u'DICOM Software Develop Library', u'Kim, Tae-Sung'),
 ]
 # A comma-separated list of custom stylesheets. Example:
-pdf_stylesheets = ['sphinx','serif', 'tenpoint', 'a4']
+pdf_stylesheets = ['my','serif', 'tenpoint', 'a4']
 
 # Create a compressed PDF
 # Use True/False or 1/0
@@ -263,7 +263,7 @@ pdf_stylesheets = ['sphinx','serif', 'tenpoint', 'a4']
 
 # Mode for literal blocks wider than the frame. Can be
 # overflow, shrink or truncate
-pdf_fit_mode = "shrink"
+pdf_fit_mode = "overflow"
 
 # Section level that forces a break page.
 # For example: 1 means top-level sections start in a new page

@@ -40,7 +40,7 @@ struct pixelsequence {
 	~pixelsequence();
 
 	int load(instream *in, bool copydata=false);
-	void dump(std::iostream *os, char *prefix);
+	void dump(std::iostream *os, const char *prefix);
 
 	int number_of_frames() {
 		int nframes = 0;

@@ -145,7 +145,7 @@ int pixelsequence::load(instream *in, bool copydata)
 	return DICOM_OK;
 }
 
-void pixelsequence::dump(std::iostream *os, char *prefix)
+void pixelsequence::dump(std::iostream *os, const char *prefix)
 {
 	char buf[1024];
 	std::list<pixelfragment *>::iterator it;

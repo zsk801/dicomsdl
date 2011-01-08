@@ -672,8 +672,8 @@ void dataset::_dump(std::iostream *os, std::string prefix)
 		case 0x00080016:
 			{
 				(*os) << " = ";
-				char *s = uidvalue_to_uidname
-								((char *)(e->to_string().c_str()));
+				const char *s =
+						uidvalue_to_uidname(e->to_string().c_str());
 				(*os) << (s ? s : "??? unknown UID");
 			}
 		}

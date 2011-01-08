@@ -45,7 +45,8 @@ Opening and Closing a DICOM file
 		
 		::
 		
-			dicomfile *df = open_dicomfile("somefile.dcm", OPT_READ_PARTIAL_FILE | 0x00540400);
+			dicomfile *df =
+				open_dicomfile("somefile.dcm", OPT_READ_PARTIAL_FILE | 0x00540400);
 	
 	.. c:var:: opttype OPT_READ_CONTINUE_ON_ERROR
 	
@@ -73,7 +74,8 @@ Opening and Closing a DICOM file
 		
 			char *fileimage;
 			// .. loading fileimage from somewhere
-			dicomfile *df = open_dicomfile_from_memory(fileimage, OPT_LOAD_DONOT_COPY_DATA);
+			dicomfile *df =
+				open_dicomfile_from_memory(fileimage, OPT_LOAD_DONOT_COPY_DATA);
 			delete fileimage; // deleting original file image
 			df->get_dataelement("PatientName")->to_string(); // CRASH!!!
 
