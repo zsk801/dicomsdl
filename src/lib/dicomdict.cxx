@@ -16,26 +16,26 @@ namespace dicom { //------------------------------------------------------
 
 struct _element_registry_struct_ {
     tagtype tag;
-    char *tag_str;
-    char *name;
-    char *keyword;
+    const char *tag_str;
+    const char *name;
+    const char *keyword;
     vrtype vr;
-    char *vr_str;
-    char *vm;
+    const char *vr_str;
+    const char *vm;
     int if_retired;
 };
 
 struct _element_keyword_struct_ {
     tagtype tag;
-    char *keyword;
+    const char *keyword;
 };
 
 struct _uid_registry_struct_ {
-    char *uidvalue;
+    const char *uidvalue;
     uidtype uid;
-    char *uid_name;
-    char *uid_type;
-    char *uid_part;
+    const char *uid_name;
+    const char *uid_type;
+    const char *uid_part;
 };
 
 #include "dicomdict.inc.cxx"
@@ -59,7 +59,7 @@ int _compare_element_tag_xx(
 		struct _element_registry_struct_ *a,
 		struct _element_registry_struct_ *b )
 {
-	char *at, *bt;
+	const char *at, *bt;
 	at = a->tag_str;
 	bt = b->tag_str;
 
@@ -123,7 +123,7 @@ DLLEXPORT vrtype get_tag_vr (tagtype tag)
 	return VR_NULL;
 }
 
-DLLEXPORT char* get_tag_name (tagtype tag)
+DLLEXPORT const char* get_tag_name (tagtype tag)
 {
 	struct _element_registry_struct_* result = _find_tag(tag);
 	if (result) return result->name;
@@ -135,7 +135,7 @@ DLLEXPORT char* get_tag_name (tagtype tag)
 	return "Unknown Data Elements";
 }
 
-DLLEXPORT char* get_tag_keyword (tagtype tag)
+DLLEXPORT const char* get_tag_keyword (tagtype tag)
 {
 	struct _element_registry_struct_* result = _find_tag(tag);
 	if (result) return result->keyword;
@@ -192,7 +192,7 @@ int _compare_uidvalue(
 const int _sizeof_uid_registry_ =
 		sizeof(uid_registry)/sizeof(_uid_registry_struct_);
 
-struct _uid_registry_struct_ *_find_uid(char *uidvalue)
+struct _uid_registry_struct_ *_find_uid(const char *uidvalue)
 {
 	if (!uidvalue || !(*uidvalue))
 		return (_uid_registry_struct_ *)uid_registry;
@@ -208,30 +208,30 @@ struct _uid_registry_struct_ *_find_uid(char *uidvalue)
 	return (_uid_registry_struct_ *)uid_registry;
 }
 
-DLLEXPORT uidtype uidvalue_to_uid (char *uidvalue)
+DLLEXPORT uidtype uidvalue_to_uid (const char *uidvalue)
 {
 	return _find_uid(uidvalue)->uid;
 }
 
-DLLEXPORT char *uid_to_uidvalue (uidtype uid)
+DLLEXPORT const char *uid_to_uidvalue (uidtype uid)
 {
-	return (char *)uidvalue_registry[uid*2];
+	return (const char *)uidvalue_registry[uid*2];
 }
 
-DLLEXPORT char *uidvalue_to_uidname (char *uidvalue)
+DLLEXPORT const char *uidvalue_to_uidname (const char *uidvalue)
 {
 	return _find_uid(uidvalue)->uid_name;
 }
 
-DLLEXPORT char *uid_to_uidname (uidtype uid)
+DLLEXPORT const char *uid_to_uidname (uidtype uid)
 {
-	return (char *)uidvalue_registry[uid*2+1];
+	return (const char *)uidvalue_registry[uid*2+1];
 }
 
 
 // vr repr string --------------------------------------------------------
 
-DLLEXPORT char *get_vr_repr (vrtype vr)
+DLLEXPORT const char *get_vr_repr (vrtype vr)
 {
 	switch (vr) {
 	case VR_NULL:	return "NULL";

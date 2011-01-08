@@ -34,7 +34,7 @@ static struct __uidprefix__ {
 		set();
 	}
 
-	void set(char *u=NULL)
+	void set(const char *u=NULL)
 	{
 		if (u == NULL)
 			set(DICOMSDL_UIDPREFIX);

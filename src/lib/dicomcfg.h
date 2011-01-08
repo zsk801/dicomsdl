@@ -10,7 +10,7 @@
 #ifndef __DICOMCFG_H__
 #define __DICOMCFG_H__
 
-#define __VERSION__ "0.76"
+#define __DICOMSDL_VERSION__ "0.76"
 
 /* #undef __DEBUG__ */
 

@@ -18,8 +18,8 @@
 
 namespace dicom { //------------------------------------------------------
 
-char *build_error_message (char * format, ...);
-char *append_error_message(char * format, ...);
+char *build_error_message (const char * format, ...);
+char *append_error_message(const char * format, ...);
 
 void clear_error_message();
 

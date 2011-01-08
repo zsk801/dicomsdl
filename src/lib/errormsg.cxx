@@ -60,7 +60,7 @@ DLLEXPORT void set_error_logger(logfunc func)
 #define _ERRORPREFIX	"error: "
 #define _ERRORPREFIXLEN 7
 
-DLLEXPORT void warning_message(char * format, ...)
+DLLEXPORT void warning_message(const char * format, ...)
 {
 	char buf[_MSGBUFSIZ+_WARNINGPREFIXLEN];
 	memcpy(buf, _WARNINGPREFIX, _WARNINGPREFIXLEN);
@@ -79,7 +79,7 @@ DLLEXPORT void warning_message(char * format, ...)
 	(*__debuglogfunc)(buf);
 }
 
-DLLEXPORT void debug_message(char * format, ...)
+DLLEXPORT void debug_message(const char * format, ...)
 {
 	char buf[_MSGBUFSIZ+_DEBUGPREFIXLEN];
 	memcpy(buf, _DEBUGPREFIX, _DEBUGPREFIXLEN);
@@ -98,7 +98,7 @@ DLLEXPORT void debug_message(char * format, ...)
 	(*__debuglogfunc)(buf);
 }
 
-DLLEXPORT void error_message(char * format, ...)
+DLLEXPORT void error_message(const char * format, ...)
 {
 	char buf[_MSGBUFSIZ+_ERRORPREFIXLEN];
 	memcpy(buf, _ERRORPREFIX, _ERRORPREFIXLEN);
@@ -123,7 +123,7 @@ DLLEXPORT void error_message(char * format, ...)
 
 static char __error_message_buf[_MSGBUFSIZ];
 
-char * build_error_message(char * format, ...)
+char * build_error_message(const char * format, ...)
 {
 	char buf[_MSGBUFSIZ];
 	va_list args;
@@ -137,7 +137,7 @@ char * build_error_message(char * format, ...)
 	return __error_message_buf;
 }
 
-char *append_error_message(char * format, ...)
+char *append_error_message(const char * format, ...)
 {
 	char buf[_MSGBUFSIZ];
 	va_list args;

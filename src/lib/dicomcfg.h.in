@@ -10,7 +10,7 @@
 #ifndef __DICOMCFG_H__
 #define __DICOMCFG_H__
 
-#define __VERSION__ "@dicomsdl_version@"
+#define __DICOMSDL_VERSION__ "@dicomsdl_version@"
 
 #cmakedefine __DEBUG__
 

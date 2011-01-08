@@ -40,7 +40,8 @@ Opening a DICOM file object from a file
 	else: 
 		print dicom.get_error_message()
 
-	# You don't need to close_dicomfile. If you want to remove object explicitly, use 'del'.
+	# You don't need to close_dicomfile().
+	# If you want to remove object explicitly, use 'del'.
 
 
 Opening a DICOM file object from memory buffer
@@ -123,7 +124,8 @@ one line.
 
 ::
 
-	// to_string() will return "N/A" string if get_dataelement() returns 'invalid' or 'non-exist' dataelement.    
+	// to_string() will return "N/A" string if get_dataelement() returns
+	//   'invalid' or 'non-exist' dataelement.    
 	value = df->get_dataelement(0x00080020)->to_string("N/A"); 
  
 
@@ -180,7 +182,8 @@ Above codes can be shortened using "ggggeeee.n.ggggeeee" form.
 
 ::
 
-	radionuclide_dose = df->get_dataelement("00540016.0.00181074")->to_double(0.0);
+	radionuclide_dose =
+			df->get_dataelement("00540016.0.00181074")->to_double(0.0);
 
 Functions to get values
 ^^^^^^^^^^^^^^^^^^^^^^^

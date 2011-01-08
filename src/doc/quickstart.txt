@@ -29,7 +29,8 @@ and image.
 		df = dicom::open_dicomfile("img001.dcm");
 		if (df) {
 			// get some informations dicom file
-			std::string studydesc = df->get_dataelement("StudyDescription")->to_string();
+			std::string studydesc =
+					df->get_dataelement("StudyDescription")->to_string();
 			// shorter form
 			std::string studytime = df["StudyDate"];
 			
@@ -93,7 +94,8 @@ Note) Returned DICOM file object need to be deleted by user.
 ::
 
 	// get some informations dicom file
-	std::string studydesc = df->get_dataelement("StudyDescription")->to_string();
+	std::string studydesc = 
+				df->get_dataelement("StudyDescription")->to_string();
 	// shorter form
 	std::string studytime = df["StudyDate"];
 

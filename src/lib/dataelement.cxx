@@ -418,7 +418,7 @@ L_MEMERROR:
 	return;
 }
 
-std::string dataelement::to_string(char* defaultvalue)
+std::string dataelement::to_string(const char* defaultvalue)
 {
 	char *strz;
 	int len;
@@ -651,7 +651,7 @@ void dataelement::from_int(int value)
 	case VR_IS:
 		free_value();
 		char buf[256];
-		len = snprintf(buf, 255, "%ld", value);
+		len = snprintf(buf, 255, "%d", value);
 		if (len & 0x01)  // make even length
 			{ buf[len] = ' '; len++; }
 		ptr = (void *)malloc(len);
@@ -739,7 +739,7 @@ void dataelement::from_int_values(int *values, int nvalues)
 				len +=
 					snprintf(buf+len,
 							  16*nvalues-len,
-							  "%ld\\", values[i]);
+							  "%d\\", values[i]);
 			if (len > 0) len --; // remove training '\'
 			if (len & 0x01)  // make even length
 				{ buf[len] = ' '; len++; }
@@ -901,7 +901,7 @@ void dataelement::set_value(std::vector <double> & v)
 	delete[] values;
 }
 
-void dataelement::from_string(char *str)
+void dataelement::from_string(const char *str)
 {
 	if (vr == VR_SQ || vr == VR_OFFSET || vr == VR_PIXSEQ)
 		return;
@@ -913,7 +913,7 @@ void dataelement::from_string(char *str)
 	}
 }
 
-void dataelement::from_data(char *data, int datasize)
+void dataelement::from_data(const char *data, int datasize)
 {
 	if (vr == VR_SQ || vr == VR_OFFSET || vr == VR_PIXSEQ)
 		return;
