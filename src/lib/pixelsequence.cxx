@@ -12,6 +12,7 @@
 #include "pixelsequence.h"
 #include "instream.h"
 #include "errormsg.h"
+#include <iostream>
 
 namespace dicom { //------------------------------------------------------
 

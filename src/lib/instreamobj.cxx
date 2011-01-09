@@ -10,6 +10,7 @@
 #include "dicom.h"
 #include "minizip/unzip.h"
 #include "instreamobj.h"
+#include <string.h>
 
 namespace dicom { //------------------------------------------------------
 
