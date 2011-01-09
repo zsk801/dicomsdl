@@ -7,6 +7,7 @@
  *
  * -------------------------------------------------------------------- */
 
+#include <stdio.h>
 #include "dicom.h"
 
 int main(int argc, char **argv)
