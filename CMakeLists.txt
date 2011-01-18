@@ -28,8 +28,16 @@ OPTION(USE_OPJ_CODEC
 		"Use openjpeg to decode/encode jpeg2000 images." ON)
 OPTION(USE_IJG_CODEC
 		"Use IJG library to decode/encode jpeg images." ON)
+		
 OPTION(USE_IPP_CODEC
 		"Use ipp library to decode/encode jpeg/jpeg2000 images." OFF)
+IF (USE_IPP_CODEC)
+	FIND_PATH(IPP_INCLUDE "ippdefs.h")
+	FIND_PATH(IPP_LIBPATH "ippcore_l.lib")
+	FIND_PATH(IPP_SAMPLEROOT "ippEULA.rtf")
+	FIND_PATH(IPP_UICBINPATH "bin/uic_jpeg-1.0.dll")
+ENDIF (USE_IPP_CODEC)
+
 OPTION(USE_LT_CODEC
 		"Use leadtools to decode/encode jpeg/jpeg2000 images." OFF)
 OPTION(USE_ZLIB

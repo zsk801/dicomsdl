@@ -120,20 +120,20 @@ void register_codecs()
 
 //	c += dicom::register_raw_codec(c);
 
-#ifdef USE_IJG_CODEC
-	c += dicom::register_ijg_codec(c);
-#endif
-
-#ifdef USE_OPJ_CODEC
-	c += dicom::register_opj_codec(c);
-#endif
-
 #ifdef USE_IPP_CODEC
 	c += dicom::register_ipp_codec(c);
 #endif
 
 #ifdef USE_LT_CODEC
 	c += dicom::register_lt_codec(c);
+#endif
+
+#ifdef USE_IJG_CODEC
+	c += dicom::register_ijg_codec(c);
+#endif
+
+#ifdef USE_OPJ_CODEC
+	c += dicom::register_opj_codec(c);
 #endif
 
 	for (c = codec_list; c->tsuid != UID_UNKNOWN; c++) {

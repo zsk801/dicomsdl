@@ -28,7 +28,7 @@ include_directories("${PROJECT_SOURCE_DIR}/lib"
 					"${PROJECT_SOURCE_DIR}/ext"
 					"${PROJECT_SOURCE_DIR}/ext/zlib"
 					)
-
+	
 # ------------------------------------------------------------------------
 # OS specific compiler flags
 
@@ -110,6 +110,29 @@ IF (USE_IJG_CODEC)
 	ADD_SOURCES(ext/ijg)
 	SET (SOURCES ${SOURCES} ${C_CXX_SOURCES})
 ENDIF (USE_IJG_CODEC)
+
+# IPP library ----------------------------------------------------
+IF (USE_IPP_CODEC)
+	ADD_SOURCES(ext/ipp)
+	SET (SOURCES ${SOURCES} ${C_CXX_SOURCES})
+	
+	GET_DIRECTORY_PROPERTY(IPP_INCLUDE_DIRECTORIES
+		DIRECTORY ext/ipp
+		DEFINITION IPP_INCLUDE_DIRECTORIES)
+	include_directories(${IPP_INCLUDE_DIRECTORIES})
+	
+	FIND_LIBRARY(LIB1 uic_core PATH "${IPP_UICBINPATH}/stublib")
+	FIND_LIBRARY(LIB2 uic_io   PATH "${IPP_UICBINPATH}/stublib")
+	FIND_LIBRARY(LIB3 uic_jpeg PATH "${IPP_UICBINPATH}/stublib")
+	FIND_LIBRARY(LIB4 uic_jpeg2000 PATH "${IPP_UICBINPATH}/stublib")
+	FIND_LIBRARY(LIB5 ippcore_l PATH "${IPP_LIBPATH}")
+	FIND_LIBRARY(LIB6 ippi_l PATH "${IPP_LIBPATH}")
+	FIND_LIBRARY(LIB7 ipps_l PATH "${IPP_LIBPATH}")
+	FIND_LIBRARY(LIB8 ippcc_l PATH "${IPP_LIBPATH}")
+	SET (EXT_LIBRARIES ${LIB1} ${LIB2} ${LIB3} ${LIB4}
+		${LIB5} ${LIB6} ${LIB7} ${LIB8})
+	
+ENDIF (USE_IPP_CODEC)
 
 # zlib -----------------------------------------------------------
 IF (USE_ZLIB)
