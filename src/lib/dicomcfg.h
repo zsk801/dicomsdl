@@ -16,10 +16,10 @@
 
 /* ---------------------------------------------------------------------*/
 
-/* #undef _HAVE_BASETSD_H */
-#define _HAVE_STDINT_H
-/* #undef _HAVE_WINDOWS_H */
-#define _HAVE_DIRENT_H
+#define _HAVE_BASETSD_H
+/* #undef _HAVE_STDINT_H */
+#define _HAVE_WINDOWS_H
+/* #undef _HAVE_DIRENT_H */
 
 /* #undef BUILD_SHARED_LIBS */
 
@@ -41,7 +41,7 @@
 
 #define USE_OPJ_CODEC
 #define USE_IJG_CODEC
-/* #undef USE_IPP_CODEC */
+#define USE_IPP_CODEC
 /* #undef USE_LT_CODEC */
 
 /* define types --------------------------------------------------------*/

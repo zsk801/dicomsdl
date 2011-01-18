@@ -44,6 +44,7 @@ rmdir /s/q CMakeFiles\CMakeTmp\CMakeFiles
 rmdir /s/q src\CMakeFiles
 rmdir /s/q src\example\CMakeFiles
 rmdir /s/q src\ext\ijg\CMakeFiles
+rmdir /s/q src\ext\ipp\CMakeFiles
 rmdir /s/q src\ext\minizip\CMakeFiles
 rmdir /s/q src\ext\opj\CMakeFiles
 rmdir /s/q src\ext\zlib\CMakeFiles

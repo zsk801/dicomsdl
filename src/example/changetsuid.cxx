@@ -27,6 +27,8 @@ int main(int argc, char **argv)
 		return 0;
 	}
 
+	dicom::use_decoder(dicom::UID_JPEG_2000_IMAGE_COMPRESSION_LOSSLESS_ONLY, "IPPUIC");
+	dicom::use_decoder(dicom::UID_JPEG_2000_IMAGE_COMPRESSION, "IPPUIC");
 	try {
 		dicom::dicomfile df;
 
@@ -70,11 +72,12 @@ int main(int argc, char **argv)
 			quality = atoi(argv[4]);
 		}
 
-		df.change_pixelencoding(tsuid, quality);
+		if (df.change_pixelencoding(tsuid, quality)) {
+			throw ("Error while changing encoding %s...", argv[1]);
+		}
 
 		char *val; int len;
-		df.save_a(&val, &len, dicom::OPT_SAVE_WITHOUT_METAINFO|
-				dicom::OPT_SAVE_WITHOUT_PREAMBLE);
+		df.save_a(&val, &len);
 		{
 			FILE *fout = fopen(argv[2], "wb");
 			fwrite(val, len, 1, fout);

@@ -32,6 +32,10 @@ typedef enum {
 	NUMBER_OF_OPT_TYPE
 } OPT_TYPE;
 
+const int MODE_UNKNOWN	= 0;
+const int MODE_GRAY		= 1;
+const int MODE_RGB		= 2;
+
 struct PIXELDATA_INFO {
 	int prec;	// bits per sample
 	int rows;

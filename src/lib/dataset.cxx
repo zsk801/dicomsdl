@@ -776,8 +776,11 @@ void dataset::get_pixeldata_a(char **val_a, int *len_a)
 	get_image_info(&width, &height, &prec, &sgnd, &ncomps, &bpp, &nframes);
 
 	e = get_dataelement(0x7fe00010);
-	if (!(e->is_valid()) || width*height*bpp == 0)
+	if (!(e->is_valid()) || width*height*bpp == 0) {
+		val = NULL;
+		len = 0;
 		return; // DICOM_ERROR
+	}
 
 	len = width * height * nframes * bpp;
 	val = (char*)malloc(len);
@@ -1182,8 +1185,17 @@ int dataset::change_pixelencoding(uidtype new_tsuid, int quality)
 		tsuid = new_tsuid;
 	}
 
-	add_dataelement(0x00020010, VR_UI)
-				->from_string(uid_to_uidvalue(new_tsuid));
+	if (!(*get_dataelement(0x00020001))) {
+		// figure out using information in dataset.
+		if (set_filemetainfo(UID_UNKNOWN, NULL, new_tsuid)) {
+			append_error_message("in dataset::change_pixelencoding(...):"
+					" error in setting metainfo for this image");
+			return DICOM_ERROR;
+		}
+	}
+	else
+		add_dataelement(0x00020010, VR_UI)
+			->from_string(uid_to_uidvalue(new_tsuid));
 
 	return DICOM_OK;
 }
