@@ -41,7 +41,7 @@
 
 #define USE_OPJ_CODEC
 #define USE_IJG_CODEC
-#define USE_IPP_CODEC
+/* #undef USE_IPP_CODEC */
 /* #undef USE_LT_CODEC */
 
 /* define types --------------------------------------------------------*/

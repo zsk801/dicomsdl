@@ -285,7 +285,7 @@ void dataelement::to_string_a(char **val_a, int *len_a)
 			if (!p) goto L_MEMERROR;
 
 			memcpy(p, ptr, n);
-			if (p[n-1] == '\0' || isspace(p[n-1])) {
+			if (p[n-1] == '\0' || isspace((unsigned char)(p[n-1]))) {
 				p[n-1] = '\0';
 				n -= 1;
 			} else
@@ -450,7 +450,7 @@ void dataelement::raw_value(char **val, int *len)
 			*val = (char *)ptr;
 			*len = (this->len > 0
 					&& ((*val)[this->len-1] == 0
-					|| isspace((*val)[this->len-1]))
+					|| isspace(((unsigned char *)(*val))[this->len-1]))
 						? this->len-1 : this->len );
 			break;
 
@@ -491,7 +491,7 @@ void __to_printable_string
 	while (len--) {
 		if (*str == '\"')
 			ss << "\\\"";
-		else if (isprint(*str))
+		else if (isprint((unsigned char)(*str)))
 			ss << *str;
 		else {
 			sprintf(dummy, "\\x%02x", (unsigned char)*str);

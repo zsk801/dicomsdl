@@ -6,6 +6,8 @@ int main()
 		dicom::dicomfile df;
 //		dicom::dataelement *e;
 
+		df.get_dataelement("00100020")->set_value("PAT ID");
+		df.get_dataelement("00100010")->set_value("PAT NAME");
 		df.add_dataelement("00110111", dicom::VR_US)->set_value(123);
 		df.add_dataelement("00110111", dicom::VR_US)->set_value(123);
 		df.add_dataelement("00110111", dicom::VR_US)->set_value(123);
