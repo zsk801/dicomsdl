@@ -18,6 +18,10 @@ namespace dicom { //------------------------------------------------------
  * logger functions
  */
 
+int output_debug_message = 0;
+int output_warning_message = 0;
+int output_error_message = 0;
+
 void default_debuglogfunc(char  *msg)
 {
 	fprintf(stdout, "%s", msg);

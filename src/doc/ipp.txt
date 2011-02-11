@@ -1,6 +1,8 @@
 Using IPP
 =========
 
+IPP 7.0 update 2 is required
+
 ::
 
 	set IPPSAMPLEROOT=X:\some-directory\ipp-samples

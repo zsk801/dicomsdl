@@ -220,27 +220,16 @@ int ipp_codec_decoder(uidtype tsuid,
 		}
 		else
 		{
-			if (pi->sgnd)
-				for(i = 0; i < pi->rows; i++)
-				{
-					Ipp32s* pSrc =
-							(Ipp32s*)(imagePn.Buffer().DataPtr()[0].p8u
-							+ i*dataOrderPn.LineStep()[0]);
-					Ipp16s* pDst = (Ipp16s*)((Ipp8u*)dst + i*dststep);
-					ippsConvert_32s16s(pSrc, pDst, pi->cols);
-				}
-			else {
-				int i, j;
-				Ipp32s* pSrc = imagePn.Buffer().DataPtr()[0].p32s;
-				Ipp16u* pDst = (Ipp16u*)dst;
+			int i, j;
+			Ipp32s* pSrc = imagePn.Buffer().DataPtr()[0].p32s;
+			Ipp16u* pDst = (Ipp16u*)dst;
 
-				for(i = 0; i < pi->rows; i++)
-				{
-					for(j = 0; j < pi->cols; j++)
-						pDst[j] = (Ipp16u)pSrc[j];
-					pSrc = (Ipp32s*)((Ipp8u*)pSrc + dataOrderPn.LineStep()[0]);
-					pDst = (Ipp16u*)((Ipp8u*)pDst + dststep);
-				}
+			for(i = 0; i < pi->rows; i++)
+			{
+				for(j = 0; j < pi->cols; j++)
+					pDst[j] = (Ipp16u)pSrc[j];
+				pSrc = (Ipp32s*)((Ipp8u*)pSrc + dataOrderPn.LineStep()[0]);
+				pDst = (Ipp16u*)((Ipp8u*)pDst + dststep);
 			}
 		}
 	}
