@@ -779,6 +779,10 @@ DLLEXPORT void set_error_logger(logfunc);
 
 DLLEXPORT char *get_error_message();
 
+DLLEXPORT extern int output_debug_message;
+DLLEXPORT extern int output_warning_message;
+DLLEXPORT extern int output_error_message;
+
 DLLEXPORT void debug_message(const char * format, ...);
 DLLEXPORT void error_message(const char * format, ...);
 DLLEXPORT void warning_message(const char * format, ...);
