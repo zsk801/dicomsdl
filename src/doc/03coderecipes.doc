@@ -1,0 +1,254 @@
+/** \page coderecipes Code Recipes
+
+\section opening_dicomfile Opening a DICOM file object
+
+Used functions
+
+- <code>dicom::open_dicomfile</code>
+- <code>dicom::open_dicomfile_from_memory</code>
+
+\subsection opening_dicomfile_fromfile Opening a DICOM file object from a file
+
+\verbatim
+   dicom::dicomfile *df;
+
+   df = dicom::open_dicomfile("img001.dcm");
+   if (!df) {
+      printf("%s\n", dicom::get_error_message());
+      goto __dicom_open_error__; // process error
+   }
+
+   // do something with dicomfile object
+
+   dicom::close_dicomfile(df);
+\endverbatim
+
+\verbatim
+   import dicom
+   
+   df = dicom.open_dicomfile('img001.dcm')
+   if df:
+      pass # Do something with dicomfile object
+   else: 
+      print dicom.get_error_message()
+
+   # You don't need to close_dicomfile().
+   # If you want to remove object explicitly, use 'del'.
+\endverbatim
+
+\subsection opening_dicomfile_from_memory Opening a DICOM file object from memory buffer
+
+\verbatim
+   FILE *fp;
+   dicom::dicomfile *df;
+   char *membuf;
+   long membufsiz;
+   
+   fp = fopen("img001.dcm", "rb");
+   if (!fp) goto __file_error__; // process error
+   
+   fseek(fp, 0, SEEK_END);
+   membufsiz = ftell(fp);
+   fseek(fp, 0, SEEK_SET);
+   
+   membuf = (char *)malloc(membufsiz);
+   if (!membuf) goto __memory_error__; // process error 
+   
+   fread(membuf, 1, membufsiz, fp);
+   fclose(fp);
+
+   df = dicom::open_dicomfile_from_memory(membuf, membufsiz);
+   free(membuf);
+   if (!df) goto __dicom_open_error__; // process error
+   
+   // do something with dicomfile object
+   
+   dicom::close_dicomfile(df);
+\endverbatim
+
+\verbatim
+   import dicom
+   
+   fileimage = file('img001.dcm', 'rb').read()
+   df = dicom.open_dicomfile_from_memory(fileimage)
+\endverbatim
+
+\section get_values Get a data element and its value
+
+You have to get <code>dicom::dataelement</code> objects before accessing
+values in a dicom file. A <code>dicom::dicomelement</code> object can be obtained
+using function <code>dicom::dataset::get_dataelement</code> or
+<code>dicom::dicomfile::get_dataelement</code>. 
+
+\verbatim
+   dicom::dicomfile *df;
+   dicom::dataelement *de;
+   std::string value;
+   
+   // ... open dicomfile
+   
+   // Get a data element that holds study date (0008,0020).
+   de = df->get_dataelement(0x00080020);
+   
+   // check existence of the data element.
+   if (de->is_valid()) { 
+      // retrieve value
+      value = de->to_string();
+   } else {
+      // set value for 'non-exist' data element.
+      value = std::string("N/A");
+   }
+\endverbatim
+
+You may shorten `get dataelement`->`check existence`->`get value` process into
+one line.
+
+\verbatim
+   // to_string() will return "N/A" string if get_dataelement() returns
+   //   'invalid' or 'non-exist' dataelement.    
+   value = df->get_dataelement(0x00080020)->to_string("N/A"); 
+\endverbatim 
+
+<code>dicom::dicomelement::get_dataelement</code> takes 'tag value' in several forms.
+If gggg,eeee mean group and element number of tag in hex form, following forms
+are acceptable.
+
+   - 0xggggeeee
+   - "0xggggeeee"
+   - "ggggeeee"
+   - "ggggeeee.n.ggggeeee"
+   - "KeyWord"
+
+For example, following forms indicate a data element contains `study description`.
+
+   - 0x00081030
+   - "0x00081030"
+   - "00081030"
+   - "StudyDescription"
+
+KeyWords are defined in ftp://medical.nema.org/medical/dicom/2009/09_06pu3.pdf 
+
+\subsection get_values_in_sequence Get a data element in a nested dataset
+
+If you need to access a data element in a nested dataset, you can
+use "ggggeeee.n.ggggeeee" form.
+     
+\verbatim
+   dicomfile *df = open_dicomfile("somefile.dcm");
+   
+   dataset *ds;
+   dataelement *de;
+   double radionuclide_dose;
+   
+   // get 0th dataset in the dataset sequence at (0054,0016)
+   // (0054,0016) = Radiopharmaceutical Information Sequence
+   ds = df->get_dataelement(0x00540016)->dataset_at(0);
+   
+   if (ds != NULL) {
+      // (0018,1074) = RadionuclideTotalDose
+      de = ds->get_dataelement(0x00181074);
+      radionuclide_dose = de->to_double(0.0);
+   } else {
+      radionuclide_dose = 0.0;
+   }
+\endverbatim
+
+Above codes can be shortened using "ggggeeee.n.ggggeeee" form.
+
+\verbatim
+   radionuclide_dose =
+         df->get_dataelement("00540016.0.00181074")->to_double(0.0);
+\endverbatim
+
+\subsection func_getvalues Functions to get values
+
+A <code>dicom::dicomelement</code> objects has several functions name like
+<code>to_<i>variabletype()</i></code>.
+
+\verbatim
+   dicomfile *df;
+
+   /*** get a value in 'int' form ***/
+   
+   int number_of_slices;
+   number_of_slices = df->get_dataelement(0x00540081)->to_int(0);
+   // another equivalent form
+   number_of_slices = (*df)[0x00540081].to_int(0);
+   // yet another equivalent form
+   number_of_slices = (*df)[0x00540081];
+   
+   
+   /*** get a value in 'real' form ***/
+
+   double slice_thickeness
+   slice_thickenss = df->get_dataelement(0x00180050)->to_double(0.0);
+   siice_thickness = (*df)[0x00180050].to_double(0.0)
+   slice_thickness = (*df)[0x00180050];
+   
+   
+   /*** get multiple 'int' values in a dataelement ***/
+   
+   int *matrix_values;
+   int n;
+   (*df)["AcquisitionMatrix"].to_int_values_a(&matrix_values, &n);
+   if (matrix_values != NULL) {
+      printf("Acquisition Matrix");
+      for (int i = 0; i < n; i++)
+         printf(" %d", matrix_values[i]);
+      free(matrix_values); // user SHOULD free() memories for array!
+   }
+   
+   // much simpler codes using std::vector
+   std::vector<int> matrix_values;
+   matrix_values =(*df)["AcquisitionMatrix"].to_int_values();
+   // or
+   matrix_values =(*df)["AcquisitionMatrix"];
+
+   
+   /*** get multiple 'double' values ***/   
+   
+   double *image_position;
+   int n;
+   (*df)["ImagePositionPatient"].to_double_values_a(&image_position, &n);
+   if (image_position != NULL) {
+      printf("Image Patient Positino");
+      for (int i = 0; i < n; i++)
+         printf(" %lf", image_position[i]);
+      free(image_position); // user SHOULD free() memories for array!
+   }
+   
+   // much simpler codes using std::vector
+   std::vector<double> image_position;
+   matrix_values =(*df)["ImagePositionPatient"].to_double_values();
+   // or
+   matrix_values =(*df)["ImagePositionPatient"];
+   
+   
+   /*** get string values ***/
+   
+   char *patient_name;
+   (*df)["PatientsName"].to_string_a(&patient_name);
+   if (patient_name) {
+      printf("Patient name = %s\n", patient_name);
+      free(patient_name); // user SHOULD free() memories for array!
+   } else {
+      printf("Patient name is not available\n");
+   }
+   
+   // much simpler codes using std::string
+   std::string patient_name;
+   patient_name = (*df)["PatientsName"].to_string("N/A");
+   // or
+   patient_name = (*df)["PatientsName"];
+   
+   
+   /*** get a value in binary form ***/
+   
+   
+\endverbatim
+
+\section set_values Setting Values
+
+\section write_to_file
+
+*/

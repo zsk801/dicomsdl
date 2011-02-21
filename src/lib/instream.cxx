@@ -77,10 +77,8 @@ instream::instream(char *_filename)
 	basestream = this;
 	own_memory = true;
 
-#ifdef __DEBUG__
-debug_message("instream{%p}::instream('%s') - "
-		"new %d bytes\n", this, in->get_filename(), filesize);
-#endif
+	LOG_DEBUG_MESSAGE("instream{%p}::instream('%s') - "
+			"new %d bytes\n", this, in->get_filename(), filesize);
 
 	return; // OK
 
@@ -119,13 +117,12 @@ instream::instream(uint8 *_data, size_t datasize, bool copydata)
 
 	basestream = this;
 
-#ifdef __DEBUG__
-if (copydata)
-	debug_message("instream{%p}::instream(), "
-			"new %d bytes\n", this, datasize);
-else
-	debug_message("instream{%p}::instream()\n", this);
-#endif
+	if (copydata)
+		LOG_DEBUG_MESSAGE("instream{%p}::instream(), "
+				"new %d bytes\n", this, datasize);
+	else
+		LOG_DEBUG_MESSAGE("instream{%p}::instream()\n", this);
+
 	return;
 
 L_MEMERROR:
@@ -162,12 +159,10 @@ instream::instream(instream* _basestream, int subsize)
 	_q = q;				// not use in substream
 	own_memory = false;
 
-#ifdef __DEBUG__
-	debug_message(
+	LOG_DEBUG_MESSAGE(
 			"instream{%p}::instream("
 			"base=instream{%p}, base_base=instream{%p})\n",
 			this, _basestream, _basestream->basestream);
-#endif
 }
 
 
@@ -175,17 +170,16 @@ instream::instream(instream* _basestream, int subsize)
 
 instream::~instream()
 {
-#ifdef __DEBUG__
+
 	if (in)
-		debug_message("instream{%p}::~instream('%s')",this,in->get_filename());
+		LOG_DEBUG_MESSAGE("instream{%p}::~instream('%s')",this,in->get_filename());
 	else
-		debug_message("instream{%p}::~instream()",this);
+		LOG_DEBUG_MESSAGE("instream{%p}::~instream()",this);
 
 	if (own_memory)
-		debug_message(" - free bytes\n");
+		LOG_DEBUG_MESSAGE(" - free bytes\n");
 	else
-		debug_message(" \n");
-#endif
+		LOG_DEBUG_MESSAGE(" \n");
 
 	if (in) {
 		in->close();
@@ -220,22 +214,23 @@ uint8 *instream::read(int n)
 						basestream->q - basestream->_q
 					);
 			basestream->_q += nread;
-#ifdef __DEBUG__
-	debug_message("instream{%p}::read() +%d bytes from disk "
-			"(%d bytes remaining)\n",
-			this, nread, basestream->q - basestream->_q);
-#endif
+
+			LOG_DEBUG_MESSAGE(
+					"instream{%p}::read() +%d bytes from disk "
+					"(%d bytes remaining)\n",
+					this, nread, basestream->q - basestream->_q);
+
 			if (nread == 0) {
 				build_error_message("cannot read file; "
 						"read 0 bytes from file");
 				throw DICOM_FILE_ERROR;
 			}
 			if (basestream->_q == basestream->q) {
-#ifdef __DEBUG__
-	debug_message("instream{%p}::read() - fclose('%s')\n",
-			this, basestream->in->get_filename());
 
-#endif
+				LOG_DEBUG_MESSAGE(
+						"instream{%p}::read() - fclose('%s')\n",
+						this, basestream->in->get_filename());
+
 				basestream->in->close();
 				delete basestream->in;
 				basestream->in = NULL;
@@ -284,11 +279,8 @@ void instream::inflate(int offset)
 	q = _q = p + inf_size;
 	own_memory = true;
 
-#ifdef __DEBUG__
-	debug_message("instream{%p}::inflate(%d)\n",
+	LOG_DEBUG_MESSAGE("instream{%p}::inflate(%d)\n",
 			this, offset);
-
-#endif
 }
 
 // trim unfilled data buffer ---------------------------------------------

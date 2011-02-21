@@ -141,10 +141,8 @@ void outstream::mark_offset(long objid)
 		objofs_marker_dict.push_back(om);
 	}
 
-#ifdef __DEBUG__
-	debug_message("outstream{%p}::mark_offset(%x) at %08xH\n",
+	LOG_DEBUG_MESSAGE("outstream{%p}::mark_offset(%x) at %08xH\n",
 			this, objid, tellp());
-#endif
 };
 
 void outstream::reserve_bytes_for_length_value

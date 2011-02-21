@@ -20,6 +20,7 @@
 #include "recordoffset.h"
 #include "imagecodec.h"
 #include "deflate.h"
+#include "sequence.h"
 
 namespace dicom { //------------------------------------------------------
 
@@ -247,19 +248,17 @@ int dataset::load(void *stream, dicomfile* dfobj,
 				}
 
 				tsuid = u;
-#ifdef __DEBUG__
-	debug_message("dataset{%p}::load() - set transfer syntax = %s (%s)\n",
-		this, uid_to_uidvalue(tsuid), uid_to_uidname(tsuid));
-#endif
+				LOG_DEBUG_MESSAGE(
+					"dataset{%p}::load() - set transfer syntax = %s (%s)\n",
+					this, uid_to_uidvalue(tsuid), uid_to_uidname(tsuid));
 			}
 
-#ifdef __DEBUG__
-	debug_message("{offset:%06x} 0x%08x  %s  (%2d)  %6d  %s\t = %s\n",
-		  curr_offset,
-		  e->tag, get_vr_repr(e->vr),
-		  e->get_vm(), e->len,
-		  e->repr_string().c_str(),  get_tag_keyword(e->tag));
-#endif
+			LOG_DEBUG_MESSAGE(
+				 "{offset:%06x} 0x%08x  %s  (%2d)  %6d  %s\t = %s\n",
+				  curr_offset,
+				  e->tag, get_vr_repr(e->vr),
+				  e->get_vm(), e->len,
+				  e->repr_string().c_str(),  get_tag_keyword(e->tag));
 		}
 
 	} catch (errtype err) {
@@ -429,7 +428,7 @@ dataelement* dataset::add_dataelement(tagtype tag, vrtype vr,
 	if (vr == VR_NULL) {
 		vr = get_tag_vr(tag);
 		if (vr == VR_NULL) {
-			warning_message("in dataset::add_dataelement(...): "
+			LOG_WARNING_MESSAGE("in dataset::add_dataelement(...): "
 					"cannot find VR for tag (%04x,%04x); "
 					"specify VR if a data element has private tag\n",
 					group_in_tag(tag), element_in_tag(tag));
@@ -453,7 +452,7 @@ dataelement* dataset::add_dataelement(tagtype tag, vrtype vr,
 	switch (vr) {
 	case VR_FD:
 		if (len % 8) {
-			warning_message("in dataset::add_dataelement(...): "
+			LOG_WARNING_MESSAGE("in dataset::add_dataelement(...): "
 						"length of dataelement with VR='%s' "
 						"should be multiply of 8, but is %d. "
 						"value is truncated.\n",
@@ -463,7 +462,7 @@ dataelement* dataset::add_dataelement(tagtype tag, vrtype vr,
 	case VR_AT:		case VR_FL:		case VR_OF:
 	case VR_UL:		case VR_SL:
 		if (len % 4) {
-			warning_message("in dataset::add_dataelement(...): "
+			LOG_WARNING_MESSAGE("in dataset::add_dataelement(...): "
 						"length of dataelement with VR='%s' "
 						"should be multiply of 4, but is %d. "
 						"value is truncated.\n",
@@ -472,7 +471,7 @@ dataelement* dataset::add_dataelement(tagtype tag, vrtype vr,
 		}
 	case VR_US:		case VR_SS:		case VR_OW:
 		if (len % 2) {
-			warning_message("in dataset::add_dataelement(...): "
+			LOG_WARNING_MESSAGE("in dataset::add_dataelement(...): "
 						"length of dataelement with VR='%s' "
 						"should be multiply of 2, but is %d. "
 						"value is truncated.\n",
@@ -600,7 +599,7 @@ dataelement* dataset::get_dataelement(char *tagstr)
 		if (tag != 0xffffffff)
 			_el = get_dataelement(tag);
 		else {
-			warning_message("in dataset::get_dataelement(...): "
+			LOG_WARNING_MESSAGE("in dataset::get_dataelement(...): "
 					"cannot find keyword \"%s\"\n", tagstr);
 			_el = nullelement();
 		}
@@ -625,9 +624,8 @@ void dataset::remove_all_dataelements()
 		it++;
 	}
 	edict.clear();
-#ifdef __DEBUG__
-	debug_message("dataset{%p}::remove_all_dataelements()\n", this);
-#endif
+
+	LOG_DEBUG_MESSAGE("dataset{%p}::remove_all_dataelements()\n", this);
 }
 
 void dataset::dump_string_a(char **val_a, int *len_a, std::string prefix) {

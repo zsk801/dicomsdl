@@ -25,7 +25,7 @@ del src\example\dicomfiledump
 del src\example\makedicomdir
 del src\wrapper\python\dummy_proj
 del src\wrapper\python\MANIFEST
-
+del src\ext\zlib\zconf.h
 
 del /s *.vcproj*
 del /s *.sln
@@ -52,7 +52,8 @@ rmdir /s/q src\lib\CMakeFiles
 rmdir /s/q src\wrapper\CMakeFiles
 rmdir /s/q src\wrapper\python\CMakeFiles
 rmdir /s/q src\wrapper\python\dicomsdl-0.72
-
+rmdir /s/q src\doc\html
+rmdir /s/q src\doc\latex
 
 del src\ext\ijg\8\*.c
 del src\ext\ijg\8\*.h

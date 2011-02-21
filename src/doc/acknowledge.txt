@@ -1,4 +1,0 @@
-Acknowledgments
-===============
-
-    * Chang-Boo, Jeong improved DICOMLIB's documentation.
