@@ -108,10 +108,8 @@ void dicomdir_taglist_t::add_tags(char **drtype_taglist)
 
 void dicomdir_taglist_t::reset_tags()
 {
-#ifdef __DEBUG__
-debug_message("taglist_t{%p}::reset_tags() - "
-		"add mandatory tags for DICOMDIR\n", this);
-#endif
+	LOG_DEBUG_MESSAGE("taglist_t{%p}::reset_tags() - "
+			"add mandatory tags for DICOMDIR\n", this);
 	largest_tag = 0x00;
 
 	// add mandatory tags for each directory record types
@@ -133,13 +131,13 @@ void dicomdir_taglist_t::free_tags()
 	map_pchar_t::iterator i;
 	list_pchar_t::iterator j;
 #ifdef __DEBUG__
-debug_message("taglist_t{%p}::free_tags() - "
+LOG_DEBUG_MESSAGE("taglist_t{%p}::free_tags() - "
 		"free %d tag-string list pair(s)\n",
 	this, taglist.size());
 #endif
 	for (i = taglist.begin(); i != taglist.end(); i++) {
 #ifdef __DEBUG__
-debug_message("taglist_t{%p}::free_tags() - "
+LOG_DEBUG_MESSAGE("taglist_t{%p}::free_tags() - "
 		". free directory record type string '%s'\n",
 	this, i->first);
 #endif
@@ -147,7 +145,7 @@ debug_message("taglist_t{%p}::free_tags() - "
 		list_pchar_t &l = i->second;
 		for (j = l.begin(); j != l.end(); j++) {
 #ifdef __DEBUG__
-debug_message("taglist_t{%p}::free_tags() - "
+LOG_DEBUG_MESSAGE("taglist_t{%p}::free_tags() - "
 		"... free tag string '%s'\n", this, *j);
 #endif
 			free(*j);
@@ -276,7 +274,7 @@ void dicomdir::analyze_directory_records(dirrec_t* base_dir, dataset *ds)
 			drtype_str = (char *)malloc(4);
 			*drtype_str = '\0';
 
-			warning_message("in dicomdir::analyze_directory_records(..): "
+			LOG_WARNING_MESSAGE("in dicomdir::analyze_directory_records(..): "
 					"no DirectoryRecordType in dataset (%s)\n",
 					df->get_filename());
 		}
@@ -343,7 +341,7 @@ void dicomdir::analyze_directory_records(dirrec_t* base_dir, dataset *ds)
 			}
 		}
 		if (key.size() == 0) {
-			warning_message("in dicomdir::analyze_directory_records(..): "
+			LOG_WARNING_MESSAGE("in dicomdir::analyze_directory_records(..): "
 					"no suitable key in dataset (%s)\n",
 					df->get_filename());
 			char s[32];
@@ -553,7 +551,7 @@ int dicomdir::add_dicomfile(dicomfile *df, char *ref_file_id)
 		ret = add_dicomfile_image_type(df, ref_file_id);
 		break;
 	default:
-		warning_message("in dicomdir::add_dicomfile(..): "
+		LOG_WARNING_MESSAGE("in dicomdir::add_dicomfile(..): "
 				"only image SOP instances can be added (%s)\n",
 				df->get_filename());
 		ret = DICOM_ERROR;
@@ -573,7 +571,7 @@ int dicomdir::add_dicomfile(char *filename, char *ref_file_id)
 		ret = add_dicomfile(df, ref_file_id);
 		delete df;
 	} else {
-		warning_message("in dicomdir::add_dicomfile(..): "
+		LOG_WARNING_MESSAGE("in dicomdir::add_dicomfile(..): "
 				"skip '%s'\n", filename);
 		ret = DICOM_ERROR;
 	}

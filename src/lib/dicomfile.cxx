@@ -35,10 +35,11 @@ dicomfile::dicomfile(char *data, int datasize)
 
 int dicomfile::load_from_file(char *filename, opttype opt, optarg arg)
 {
-#ifdef __DEBUG__
-	debug_message("dicomfile{%p}::load_from_file(%s)\n",
+
+	LOG_DEBUG_MESSAGE(
+			"dicomfile{%p}::load_from_file(%s)\n",
 			this, filename);
-#endif
+
 	try {
 		instream *s = new instream(filename);
 		stream = (void *)s;
@@ -60,10 +61,9 @@ int dicomfile::load_from_file(char *filename, opttype opt, optarg arg)
 
 int dicomfile::load_from_data(char *data, int datasize, opttype opt, optarg arg)
 {
-#ifdef __DEBUG__
-	debug_message("dicomfile{%p}::load_from_data(%p, %d, %016llx)\n",
+	LOG_DEBUG_MESSAGE(
+			"dicomfile{%p}::load_from_data(%p, %d, %016llx)\n",
 			this, data, datasize, opt);
-#endif
 
 	try {
 		instream *s = new instream((uint8 *)data, datasize,

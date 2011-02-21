@@ -76,9 +76,9 @@
 1.2.840.10008.3.1.2.2.1,Detached Visit Management SOP Class (Retired),SOP Class,PS 3.4
 1.2.840.10008.3.1.2.3.1,Detached Study Management SOP Class (Retired),SOP Class,PS 3.4
 1.2.840.10008.3.1.2.3.2,Study Component Management SOP Class (Retired),SOP Class,PS 3.4
-1.¡©2.840.10008.3.1.2.3.3,Modality Performed Procedure Step SOP Class,SOP Class,PS 3.4
-1.¡©2.840.10008.3.1.2.3.4,Modality Performed Procedure Step Retrieve SOP Class,SOP Class,PS 3.4
-1.¡©2.840.10008.3.1.2.3.5,Modality Performed Procedure Step Notification SOP Class,SOP Class,PS 3.4
+1.2.840.10008.3.1.2.3.3,Modality Performed Procedure Step SOP Class,SOP Class,PS 3.4
+1.2.840.10008.3.1.2.3.4,Modality Performed Procedure Step Retrieve SOP Class,SOP Class,PS 3.4
+1.2.840.10008.3.1.2.3.5,Modality Performed Procedure Step Notification SOP Class,SOP Class,PS 3.4
 1.2.840.10008.3.1.2.5.1,Detached Results Management SOP Class (Retired),SOP Class,PS 3.4
 1.2.840.10008.3.1.2.5.4,Detached Results Management Meta SOP Class (Retired),Meta SOP Class,PS 3.4
 1.2.840.10008.3.1.2.5.5,Detached Study Management Meta SOP Class (Retired),Meta SOP Class,PS 3.4

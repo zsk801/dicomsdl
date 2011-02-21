@@ -106,12 +106,71 @@ typedef enum {
 } errtype;
 
 
+/** options for loading or saving a dicom file object */
 typedef uint32 opttype;
 typedef uint32 optarg;
 
 const opttype OPT_DEFAULT						= 0x0000;
+
+/** Load a fore pat of a DICOM file
+ *
+ * Default, Read the part of a DICOM file, before the given <i>tag</i>.
+ * <i>tag</i> value should be given as additional parameters for
+ * open_dicomfile. By skipping the latter portion of a file,
+ * loading a large numbers of DICOM file will be much faster. Following
+ * code will skip all data elements with tags after
+ * <code>(0054,0040)</code>.
+
+\verbatim
+dicomfile *df =
+  open_dicomfile("somefile.dcm", OPT_READ_PARTIAL_FILE, 0x00540400);
+\endverbatim
+\sa open_dicomfile(), open_dicomfile_from_memory()
+ */
 const opttype OPT_LOAD_PARTIAL_FILE				= 0x0001;
+
+/** Continue load a dicom file on error
+ * <code>open_dicomfile()</code> and
+ * <code>open_dicomfile_from_memory()</code> continue reading on error
+ * and returns partially loaded dicomfile object, rather than returns
+ * <code>NULL</code>. get_error_message() is needed to check
+ * if error has been occurred.
+
+\verbatim
+dicomfile *df = open_dicomfile(filename, OPT_LOAD_CONTINUE_ON_ERROR);
+if (get_error_message()) {
+	printf("There was error while reading '%s'; %s",
+	filename, get_error_message());
+}
+\endverbatim
+\sa open_dicomfile(), open_dicomfile_from_memory()
+ */
 const opttype OPT_LOAD_CONTINUE_ON_ERROR		= 0x0002;
+
+/** Do not copy file image
+ *
+ * Only for <code>open_dicomfile_from_memory()</code>.
+ * When <code>open_dicomfile_from_memory()</code> load a dicomfile object
+ * from DICOM file image, it copies whole image and keeps it internally.
+ * Whenever you access data element's value, accessing function will
+ * reference internally kept DICOM file image.
+ * When <code>OPT_LOAD_DONOT_COPY_DATA</code> option is given,
+ * <code>open_dicomfile_from_memory()</code> will not copy the image. That
+ * means if you try access data element's value after destroy original
+ * DICOM file image, application will crash. So, if you use an option
+ * <code>OPT_LOAD_DONOT_COPY_DATA</code> original file image should be
+ * maintained until dicomfile object is deleted.
+
+\verbatim
+char *fileimage;
+// .. loading fileimage from somewhere
+dicomfile *df =
+	open_dicomfile_from_memory(fileimage, OPT_LOAD_DONOT_COPY_DATA);
+delete fileimage; // deleting original file image
+df->get_dataelement("PatientName")->to_string(); // CRASH!!!
+\endverbatim
+\sa open_dicomfile_from_memory(), open_dicomdir_from_memory()
+ */
 const opttype OPT_LOAD_DONOT_COPY_DATA			= 0x0004;
 
 const opttype OPT_SAVE_WITHOUT_PREAMBLE			= 0x0100;
@@ -120,7 +179,6 @@ const opttype OPT_SAVE_IMPLICIT_SQ_LENGTH		= 0x0400;
 const opttype OPT_SAVE_IMPLICIT_DATASET_LENGTH	= 0x0800;
 const opttype OPT_SAVE_CALC_GROUPLENGTH			= 0x1000;
 const opttype OPT_SAVE_BASIC_OFFSET_TABLE		= 0x2000;
-const opttype __OPT_SAVE_DATASET_IN_SEQUENCE	= 0x8000;
 
 static const opttype default_load_opt = OPT_DEFAULT
 		//| OPT_LOAD_PARTIAL_FILE
@@ -374,6 +432,8 @@ typedef enum {
  */
 
 typedef std::map <tagtype, dataelement *> element_dict_type;
+
+/*! Implementation of DICOM data set */
 struct DLLEXPORT dataset {
 	element_dict_type edict;		// element dictionary
 	uidtype tsuid;		// transfer syntax for this dataset
@@ -459,12 +519,39 @@ private:
  * dicomfile
  */
 
+/*! Read and parse a DICOM file
+ *
+ * \param filename DICOM file name
+ * \param opt option to read
+ * \param arg arguments for an option
+ * \return Return a dicom::dicomfile object. Return NULL on failure.
+ * \sa open_dicomfile_from_memory(), close_dicomfile(),
+ *     OPT_LOAD_CONTINUE_ON_ERROR, OPT_LOAD_PARTIAL_FILE
+ */
 DLLEXPORT dicomfile* open_dicomfile
 			(char *filename,
 			 opttype opt=default_load_opt, optarg arg=0);
+
+/*! Read and parse a DICOM file from memory
+ *
+ * \param data image of a DICOM file
+ * \param datasize length of data
+ * \param opt option to read
+ * \param arg arguments for an option
+ * \return Return a dicom::dicomfile object. Return NULL on failure.
+ * \sa open_dicomfile(), close_dicomfile()
+ *     OPT_LOAD_CONTINUE_ON_ERROR, OPT_LOAD_DONOT_COPY_DATA,
+ *     OPT_LOAD_PARTIAL_FILE
+ */
 DLLEXPORT dicomfile* open_dicomfile_from_memory
 			(char *data, int datasize,
 			 opttype opt=default_load_opt, optarg arg=0);
+
+/*! Destroy a dicom::dicomfile object.
+ *
+ * \param df dicom::dicomfile object that is returned from
+ * 			 open_dicomfile() or open_dicomfile_from_memory()
+ */
 DLLEXPORT void close_dicomfile(dicomfile *df);
 
 struct DLLEXPORT dicomfile: public dataset {
@@ -772,23 +859,33 @@ DLLEXPORT const char *uid_to_uidname (uidtype uid);
 
 DLLEXPORT const char *get_vr_repr (vrtype vr);
 
+// logging debug, warning and error messages
+
 typedef void (*logfunc)(char *msg);
 DLLEXPORT void set_debug_logger(logfunc);
 DLLEXPORT void set_warning_logger(logfunc);
 DLLEXPORT void set_error_logger(logfunc);
 
+DLLEXPORT void set_display_debug_message(int b);
+DLLEXPORT void set_display_warning_message(int b);
+DLLEXPORT void set_display_debug_message(int b);
+
+// get error message
+
+/*! Return error message
+ * \return Return a string contains error message
+ *         if previous operation had an error.
+ *         Otherwise, return <code>NULL</code>.
+ *
+ */
 DLLEXPORT char *get_error_message();
 
-DLLEXPORT extern int output_debug_message;
-DLLEXPORT extern int output_warning_message;
-DLLEXPORT extern int output_error_message;
-
-DLLEXPORT void debug_message(const char * format, ...);
-DLLEXPORT void error_message(const char * format, ...);
-DLLEXPORT void warning_message(const char * format, ...);
+// select decoder / encoder for decoding / encoding pixel data
 
 DLLEXPORT int use_decoder(uidtype tsuid, char *codec_name);
 DLLEXPORT int use_encoder(uidtype tsuid, char *codec_name);
+
+// support functions for zipped DICOM files
 
 DLLEXPORT void test_unzip(char *filename);
 DLLEXPORT std::string zipfile_get_list(char *filename);

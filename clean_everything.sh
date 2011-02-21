@@ -17,9 +17,13 @@ delete *.cmake
 delete CTestTestfile.cmake
 delete dicom.i
 delete *.rst
+delete zconf.h
 
 delete *.a
 delete _*.so
+
+rm -vf src/doc/html
+rm -vf src/doc/latex
 
 rm -vf src/example/changetsuid
 rm -vf src/example/dicomfiledump

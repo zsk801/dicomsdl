@@ -1,8 +1,6 @@
-Quick Start
-===========
+/** \page quickstart Quick Start
 
-A Brief Overview on DICOM
--------------------------
+\section brief_overview A Brief Overview on DICOM
 
 If you are not familiar with DICOM, read this before you go on.
 There are several good webpages that introduce on DICOM.
@@ -10,15 +8,12 @@ There are several good webpages that introduce on DICOM.
 ((( TBD )))
 
 
-C++ example 
------------
+\section cpp_example C++ example 
 
 This short example loads a DICOM formatted file and extract some informations
 and image.
 
-.. highlightlang:: c++
-
-::
+\verbatim
 
 	#include "dicom.h"
 	#include <string>
@@ -64,92 +59,79 @@ and image.
 		}
 	}
 
+\endverbatim
 
 Let's see what above codes do line by line.
 
-.. highlightlang:: c++
-
-::
-
+\verbatim
 	dicom::dicomfile *df;
+\endverbatim
 
-A :cpp:class:`dicom::dicomfile` is an implementation of DICOM file object.
+A <code>dicom::dicomfile</code> is an implementation of DICOM file object.
 
 
 
-.. highlightlang:: c++
-
-::
-
+\verbatim
 	df = dicom::open_dicomfile("img001.dcm");
+\endverbatim
 
-:cpp:func:`dicom::open_dicomfile` reads, parses the file and
+<code>dicom::open_dicomfile()</code> reads, parses the file and
 returns a DICOM file object.
 
 Note) Returned DICOM file object need to be deleted by user.
 
 
-.. highlightlang:: c++
-
-::
-
+\verbatim
 	// get some informations dicom file
 	std::string studydesc = 
 				df->get_dataelement("StudyDescription")->to_string();
 	// shorter form
 	std::string studytime = df["StudyDate"];
+\endverbatim
 
 A DICOM file consists of several items contain informations about the DICOM file.
 Each item in a DICOM file called 'data element' and you get a data element using
-:cpp:func:`get_dataelement`. Item's value can be retrieved with functions
-like :cpp:func:`to_string`, :cpp:func:`to_int`,
-:cpp:func:`to_double_values`, according to the data type of item.
+<code>get_dataelement</code>. Item's value can be retrieved with functions
+like <code>to_string</code>, <code>to_int</code>,
+<code>to_double_values</code>, according to the data type of item.
 You may shorten code in second form.
 
-.. highlightlang:: c++
-
-::
-
+\verbatim
 	// get informations of image in dicom file
 	get_image_info(&width, &height,
 		&precision, &signedness, &ncomponents, &bytes_per_pixel,
 		&nframes);	
 	// get pixeldata
 	df->get_pixeldata_a(&pixeldata, &pixeldata_length);
+\endverbatim
 
 DICOM file object provide functions to extract image in the DICOM file.
-:cpp:func:`get_image_info` takes informations related to image's geometry,
-and :cpp:func:`get_pixeldata_a` extract image.
+<code>get_image_info</code> takes informations related to image's geometry,
+and <code>get_pixeldata_a</code> extract image.
 
 Note)
-The suffix '_a' in the function name :cpp:func:`get_pixeldata_a` means
-that function return a pointer that should be `free()` by user,
+The suffix '_a' in the function name <code>get_pixeldata_a</code> means
+that function return a pointer that should be <code>free()</code> by user,
 provided that the pointer is valid.
 
 
-.. highlightlang:: c++
-
-::
-
+\verbatim
 	printf("Error message: %s\n", dicom::get_error_message());
+\endverbatim
 
 If an error is occured during reading/parsing a DICOM file,
-:cpp:func:`open_dicomfile()` return NULL and you may get the error message
-using :cpp:func:`dicom::get_error_message()`.  
-After calling several functions return NULL on error,
-:cpp:func:`dicom::get_error_message()` provide informations about the error.
+<code>dicom::open_dicomfile()</code> return NULL and you may
+get the error message using <code>dicom::get_error_message()</code>.  
+After calling several functions that return NULL on error,
+<code>dicom::get_error_message()</code> provide informations about the error.
 
 
-Python example 
---------------
+\section python_example Python example 
 
 This is a python program does exact same thing.
 
 
-.. highlightlang:: py
-
-::
-
+\verbatim
 	import dicom
 	
 	df = dicom.open_dicomfile('img001.dcm')
@@ -177,4 +159,6 @@ This is a python program does exact same thing.
 			pass # do something ...		
 	else:
 		print "Error message:", dicom.get_error_message()
-	
+\endverbatim	
+
+*/

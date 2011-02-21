@@ -38,10 +38,8 @@ pixelfragment::pixelfragment(instream *in, uint32 len, bool copydata)
 
 	check_have_ffd9();
 
-#ifdef __DEBUG__
-	debug_message("pixelfragment{%p}::pixelfragment("
+	LOG_DEBUG_MESSAGE("pixelfragment{%p}::pixelfragment("
 			"instream{%p}, %d)\n", this, in, len);
-#endif
 }
 
 pixelfragment::pixelfragment(uint8 *data, uint32 datasize, bool copydata)
@@ -66,21 +64,19 @@ pixelfragment::pixelfragment(uint8 *data, uint32 datasize, bool copydata)
 
 	check_have_ffd9();
 
-#ifdef __DEBUG__
-	debug_message("pixelfragment{%p}::pixelfragment("
+	LOG_DEBUG_MESSAGE("pixelfragment{%p}::pixelfragment("
 			"{%p}, %d)\n", this, data, len);
-#endif
 }
 
 pixelfragment::~pixelfragment()
 {
 	if (own_memory) free(ptr);
 
-#ifdef __DEBUG__
-debug_message("pixelfragment{%p}::~pixelfragment()", this);
-if (own_memory) debug_message(" free memory\n", this);
-		   else debug_message(" \n", this);
-#endif
+	LOG_DEBUG_MESSAGE("pixelfragment{%p}::~pixelfragment()", this);
+	if (own_memory)
+		LOG_DEBUG_MESSAGE(" free memory\n", this);
+	else
+		LOG_DEBUG_MESSAGE(" \n", this);
 }
 
 void pixelfragment::check_have_ffd9()
@@ -106,9 +102,7 @@ pixelsequence::~pixelsequence()
 	for (it=fragments.begin(); it!=fragments.end(); it++)
 		delete (*it);
 
-#ifdef __DEBUG__
-	debug_message("pixelsequence{%p}::~pixelsequence()\n", this);
-#endif
+	LOG_DEBUG_MESSAGE("pixelsequence{%p}::~pixelsequence()\n", this);
 }
 
 int pixelsequence::load(instream *in, bool copydata)
@@ -135,9 +129,8 @@ int pixelsequence::load(instream *in, bool copydata)
 			pixelfragment *frag = new pixelfragment (in, len, copydata);
 			fragments.push_back(frag);
 		}
-#ifdef __DEBUG__
-	debug_message("pixelsequence{%p}::load()\n", this);
-#endif
+
+		LOG_DEBUG_MESSAGE("pixelsequence{%p}::load()\n", this);
 	} catch (errtype err) {
 		append_error_message("in pixelsequence::load():");
 		return err;
@@ -224,7 +217,7 @@ int pixelsequence::add_frame_data
 		datasize -= bytestocopy;
 
 		if (datasize == 0 && frag->have_ffd9 != true) {
-			warning_message(" in  pixelsequence::add_frame_data(...):"
+			LOG_WARNING_MESSAGE(" in  pixelsequence::add_frame_data(...):"
 					" the frame is not ended with FFD9!\n");
 			frag->have_ffd9 = true;
 		}

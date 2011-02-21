@@ -12,6 +12,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "dicom.h"
+#include "errormsg.h"
 
 namespace dicom { //------------------------------------------------------
 
@@ -41,7 +42,7 @@ static struct __uidprefix__ {
 		if (u == NULL)
 			set(DICOMSDL_UIDPREFIX);
 		else if (*u == '\0' || !is_valid_uid(prefix)) {
-			warning_message("in set_uid_prefix(..) :"
+			LOG_WARNING_MESSAGE("in set_uid_prefix(..) :"
 					"in valid string '%s' for uid"
 					"use default uid prefix '%s'", u, DICOMSDL_UIDPREFIX);
 			set(DICOMSDL_UIDPREFIX);

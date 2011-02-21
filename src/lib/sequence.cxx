@@ -11,6 +11,7 @@
 #include "instream.h"
 #include "outstream.h"
 #include "errormsg.h"
+#include "sequence.h"
 
 namespace dicom { //------------------------------------------------------
 
@@ -18,10 +19,8 @@ int sequence::load(void *_in, dicomfile *dfobj, uidtype _tsuid)
 {
 	instream* s = (instream *)_in;
 
-#ifdef __DEBUG__
-	debug_message("sequence{%p}::load( instream{%p} )\n", this, s);
-	debug_message("---- dataset sequence start ----\n");
-#endif
+	LOG_DEBUG_MESSAGE("sequence{%p}::load( instream{%p} )\n", this, s);
+	LOG_DEBUG_MESSAGE("---- dataset sequence start ----\n");
 
 	int endian = (_tsuid == UID_EXPLICIT_VR_BIG_ENDIAN?
 					BIG_ENDIAN : LITTLE_ENDIAN);
@@ -70,9 +69,8 @@ int sequence::load(void *_in, dicomfile *dfobj, uidtype _tsuid)
 	} catch (errtype err) {
 		result = err;
 	}
-#ifdef __DEBUG__
-	debug_message("----- dataset sequence end -----\n");
-#endif
+
+	LOG_DEBUG_MESSAGE("----- dataset sequence end -----\n");
 
 	if (result != DICOM_OK)
 		append_error_message("in sequence::load(...):");

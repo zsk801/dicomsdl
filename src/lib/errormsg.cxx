@@ -18,9 +18,24 @@ namespace dicom { //------------------------------------------------------
  * logger functions
  */
 
-int output_debug_message = 0;
-int output_warning_message = 0;
-int output_error_message = 0;
+int display_debug_message = 0;
+int display_warning_message = 0;
+int display_error_message = 0;
+
+void set_display_debug_message(int b)
+{
+	display_debug_message = b;
+}
+
+void set_display_warning_message(int b)
+{
+	display_warning_message = b;
+}
+
+void set_display_error_message(int b)
+{
+	display_error_message = b;
+}
 
 void default_debuglogfunc(char  *msg)
 {
@@ -64,7 +79,7 @@ DLLEXPORT void set_error_logger(logfunc func)
 #define _ERRORPREFIX	"error: "
 #define _ERRORPREFIXLEN 7
 
-DLLEXPORT void warning_message(const char * format, ...)
+DLLEXPORT void _warning_message(const char * format, ...)
 {
 	char buf[_MSGBUFSIZ+_WARNINGPREFIXLEN];
 	memcpy(buf, _WARNINGPREFIX, _WARNINGPREFIXLEN);
@@ -83,7 +98,7 @@ DLLEXPORT void warning_message(const char * format, ...)
 	(*__debuglogfunc)(buf);
 }
 
-DLLEXPORT void debug_message(const char * format, ...)
+DLLEXPORT void _debug_message(const char * format, ...)
 {
 	char buf[_MSGBUFSIZ+_DEBUGPREFIXLEN];
 	memcpy(buf, _DEBUGPREFIX, _DEBUGPREFIXLEN);
@@ -102,7 +117,7 @@ DLLEXPORT void debug_message(const char * format, ...)
 	(*__debuglogfunc)(buf);
 }
 
-DLLEXPORT void error_message(const char * format, ...)
+DLLEXPORT void _error_message(const char * format, ...)
 {
 	char buf[_MSGBUFSIZ+_ERRORPREFIXLEN];
 	memcpy(buf, _ERRORPREFIX, _ERRORPREFIXLEN);
