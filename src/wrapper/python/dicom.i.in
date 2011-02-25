@@ -45,6 +45,14 @@
     $2 = _len;
 } 
 
+%typemap(in, numinputs=1) (const char *data, int datasize) {
+    if (!PyString_Check($input))
+        { PyErr_SetString(PyExc_ValueError, "need string"); return NULL; }
+    Py_ssize_t _len;
+    PyString_AsStringAndSize($input, &$1, &_len);
+    $2 = _len;
+} 
+
 
 // (char **val_a, int *len_a, int *isalloc) ------------------------------
 
@@ -355,6 +363,8 @@
 
 %ignore dicom::dataelement::set_value(char *);
 %ignore dicom::dataelement::set_value(char *,int);
+%ignore dicom::dataelement::set_value(const char *);
+%ignore dicom::dataelement::set_value(const char *,int);
 
 %ignore dicom::dataelement::to_int_values;
 %rename(to_int_values) dicom::dataelement::to_int_values_a;
@@ -392,6 +402,7 @@
 %ignore dicom::dataelement::operator=(double v);
 %ignore dicom::dataelement::operator=(std::vector <double> & v);
 %ignore dicom::dataelement::operator=(char * v);
+%ignore dicom::dataelement::operator=(const char * v);
 %ignore dicom::dataelement::operator=(std::string &s);
 %ignore dicom::dataelement::operator std::vector<int>;
 %ignore dicom::dataelement::operator std::vector<double>;
@@ -401,7 +412,9 @@
 
 // use load_from_data(fileimagestring, True or False) instead
 %ignore dicom::dicomfile::dicomfile(char *,int);
+%ignore dicom::dicomfile::dicomfile(const char *,int);
 %ignore dicom::dicomdir::dicomdir(char *,int);
+%ignore dicom::dicomdir::dicomdir(const char *,int);
 
 
 //------------------------------------------------------------------------
@@ -416,7 +429,10 @@
 
 # get_value / set_value wrappers -----------------------------------------
  
-def __dicom_dataelement_get_value(self):
+def __dicom_dataelement_get_value(self, defaultvalue=None):
+	if not self.is_valid() and defaultvalue:
+		return defaultvalue
+		
 	if self.vr in [VR_SL, VR_SS, VR_UL, VR_US, VR_AT, VR_IS]:
 		if self.get_vm() == 1:
 			return self.to_int()

@@ -2,7 +2,7 @@ SET (EXAMPLE_SOURCES
 	changetsuid
 	dicomfiledump
 	makedicomdir
-	test
+	example_getvalue
 )
 
 SET (PY_EXAMPLE_SOURCES
