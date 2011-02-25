@@ -19,7 +19,7 @@ namespace dicom { //------------------------------------------------------
  */
 
 int display_debug_message = 0;
-int display_warning_message = 0;
+int display_warning_message = 1;
 int display_error_message = 0;
 
 void set_display_debug_message(int b)

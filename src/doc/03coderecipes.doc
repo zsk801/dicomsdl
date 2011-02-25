@@ -256,7 +256,7 @@ image_position =(*df)["ImagePositionPatient"];
 /*** get string values ***/
 
 char *patient_name;
-(*df)["PatientsName"].to_string_a(&patient_name);
+(*df)["PatientName"].to_string_a(&patient_name);
 if (patient_name) {
 	printf("Patient name = %s\n", patient_name);
 	free(patient_name); // user SHOULD free() memories for array!
@@ -275,7 +275,7 @@ patient_name = (*df)["PatientName"];
 
 char *pixeldata;
 int pixeldata_len;
-df->raw_value(&pixeldata, &pixeldata_len);
+df->get_dataelement(0x7fe00010)->raw_value(&pixeldata, &pixeldata_len);
 if (pixeldata) {
 	// do something with pixel data
 	// DO NOT free() pixeldata
