@@ -9,7 +9,7 @@ Used functions
 
 \subsection opening_dicomfile_fromfile Opening a DICOM file object from a file
 
-\verbatim
+\code
    dicom::dicomfile *df;
 
    df = dicom::open_dicomfile("img001.dcm");
@@ -21,9 +21,9 @@ Used functions
    // do something with dicomfile object
 
    dicom::close_dicomfile(df);
-\endverbatim
+\endcode
 
-\verbatim
+\code
    import dicom
    
    df = dicom.open_dicomfile('img001.dcm')
@@ -34,11 +34,11 @@ Used functions
 
    # You don't need to close_dicomfile().
    # If you want to remove object explicitly, use 'del'.
-\endverbatim
+\endcode
 
 \subsection opening_dicomfile_from_memory Opening a DICOM file object from memory buffer
 
-\verbatim
+\code
    FILE *fp;
    dicom::dicomfile *df;
    char *membuf;
@@ -64,14 +64,14 @@ Used functions
    // do something with dicomfile object
    
    dicom::close_dicomfile(df);
-\endverbatim
+\endcode
 
-\verbatim
+\code
    import dicom
    
    fileimage = file('img001.dcm', 'rb').read()
    df = dicom.open_dicomfile_from_memory(fileimage)
-\endverbatim
+\endcode
 
 \section get_values Get a data element and its value
 
@@ -80,7 +80,7 @@ values in a dicom file. A <code>dicom::dicomelement</code> object can be obtaine
 using function <code>dicom::dataset::get_dataelement</code> or
 <code>dicom::dicomfile::get_dataelement</code>. 
 
-\verbatim
+\code
    dicom::dicomfile *df;
    dicom::dataelement *de;
    std::string value;
@@ -98,42 +98,42 @@ using function <code>dicom::dataset::get_dataelement</code> or
       // set value for 'non-exist' data element.
       value = std::string("N/A");
    }
-\endverbatim
+\endcode
 
-You may shorten `get dataelement`->`check existence`->`get value` process into
-one line.
+You may shorten <em>get dataelement->check existence->get value</em>
+process into one line.
 
-\verbatim
+\code
    // to_string() will return "N/A" string if get_dataelement() returns
    //   'invalid' or 'non-exist' dataelement.    
    value = df->get_dataelement(0x00080020)->to_string("N/A"); 
-\endverbatim 
+\endcode
 
-<code>dicom::dicomelement::get_dataelement</code> takes 'tag value' in several forms.
+\c dicom::dicomfile::get_dataelement takes 'tag value' in several forms.
 If gggg,eeee mean group and element number of tag in hex form, following forms
 are acceptable.
 
-   - 0xggggeeee
-   - "0xggggeeee"
-   - "ggggeeee"
-   - "ggggeeee.n.ggggeeee"
-   - "KeyWord"
+   - \c 0xggggeeee
+   - \c "0xggggeeee"
+   - \c "ggggeeee"
+   - \c "ggggeeee.n.ggggeeee"
+   - \c "KeyWord"
 
-For example, following forms indicate a data element contains `study description`.
+For example, following forms indicate a data element contains <em>study description</em>
 
-   - 0x00081030
-   - "0x00081030"
-   - "00081030"
-   - "StudyDescription"
+   - \c 0x00081030
+   - \c "0x00081030"
+   - \c "00081030"
+   - \c "StudyDescription"
 
 KeyWords are defined in ftp://medical.nema.org/medical/dicom/2009/09_06pu3.pdf 
 
 \subsection get_values_in_sequence Get a data element in a nested dataset
 
 If you need to access a data element in a nested dataset, you can
-use "ggggeeee.n.ggggeeee" form.
+use \c "ggggeeee.n.ggggeeee" form.
      
-\verbatim
+\code
    dicomfile *df = open_dicomfile("somefile.dcm");
    
    dataset *ds;
@@ -151,21 +151,21 @@ use "ggggeeee.n.ggggeeee" form.
    } else {
       radionuclide_dose = 0.0;
    }
-\endverbatim
+\endcode
 
-Above codes can be shortened using "ggggeeee.n.ggggeeee" form.
+Above codes can be shortened using \c "ggggeeee.n.ggggeeee" form.
 
-\verbatim
+\code
    radionuclide_dose =
          df->get_dataelement("00540016.0.00181074")->to_double(0.0);
-\endverbatim
+\endcode
 
 \subsection func_getvalues Functions to get values
 
-A <code>dicom::dicomelement</code> objects has several functions name like
-<code>to_<i>variabletype()</i></code>.
+A \c dicom::dataelement</code> objects has several functions name like
+\c to_<i>variabletype()</i>.
 
-\verbatim
+\code
    dicomfile *df;
 
    /*** get a value in 'int' form ***/
@@ -182,7 +182,7 @@ A <code>dicom::dicomelement</code> objects has several functions name like
 
    double slice_thickeness
    slice_thickenss = df->get_dataelement(0x00180050)->to_double(0.0);
-   siice_thickness = (*df)[0x00180050].to_double(0.0)
+   slice_thickness = (*df)[0x00180050].to_double(0.0)
    slice_thickness = (*df)[0x00180050];
    
    
@@ -245,10 +245,173 @@ A <code>dicom::dicomelement</code> objects has several functions name like
    /*** get a value in binary form ***/
    
    
-\endverbatim
+\endcode
+
+\code
+df = open_dicomfile("img001")
+
+# get a value in 'int' form
+
+number_of_slices = df.get_dataelement(0x00540081).to_int(0)
+# an equivalent form
+number_of_slices = df[0x00540081]
+
+# get a value in 'real' form
+
+slice_thickenss = df.get_dataelement(0x00180050).to_double(0.0);
+slice_thickness = df[0x00180050]
+   
+# get multiple 'int' values in a dataelement
+acq_mat = df.get_dataelement("AcquisitionMatrix").to_int_values()
+acq_mat = df["AcquisitionMatrix"]
+
+# get multiple 'double' values
+
+imt_pos = df."ImagePositionPatient"].to_double_values_a(&image_position, &n);
+   if (image_position != NULL) {
+      printf("Image Patient Positino");
+      for (int i = 0; i < n; i++)
+         printf(" %lf", image_position[i]);
+      free(image_position); // user SHOULD free() memories for array!
+   }
+   
+   // much simpler codes using std::vector
+   std::vector<double> image_position;
+   matrix_values =(*df)["ImagePositionPatient"].to_double_values();
+   // or
+   matrix_values =(*df)["ImagePositionPatient"];
+   
+   
+   /*** get string values ***/
+   
+   char *patient_name;
+   (*df)["PatientsName"].to_string_a(&patient_name);
+   if (patient_name) {
+      printf("Patient name = %s\n", patient_name);
+      free(patient_name); // user SHOULD free() memories for array!
+   } else {
+      printf("Patient name is not available\n");
+   }
+   
+   // much simpler codes using std::string
+   std::string patient_name;
+   patient_name = (*df)["PatientsName"].to_string("N/A");
+   // or
+   patient_name = (*df)["PatientsName"];
+   
+   
+   /*** get a value in binary form ***/
+   
+   
+\endcode
+
+
 
 \section set_values Setting Values
 
-\section write_to_file
+\section write_to_file Write to a file
+
+\section get_image Getting pixel data
+
+\subsection get_image_cpp Getting pixel data with C++
+
+\code
+dicomfile *df;
+
+int width, height;
+int precision, signedness;
+int ncomponents, bytes_per_pixel;
+int nframes;
+
+char* pixel_buffer;
+int buffer_length; 
+int row_step, frame_step;
+
+df = dicom::open_dicomfile("img001");
+
+if (df) {
+	df->get_image_info(&width, &height,
+		&precision, &signedness,
+		&ncomponents, &bytes_per_pixel, &nframes);
+	
+	if (width) {
+		buffer_length = width*bytes_per_pixel*height*nframes;
+		pixel_buffer = new char[buffer_length];
+		
+		row_step = width*bytes_per_pixel;
+		frame_step = width*bytes_per_pixel*height;
+		copy_pixeldata_to(&pixel_buffer, row_step, frame_step);
+		
+		/* do something with pixel data */
+		
+		delete pixel_buffer;
+	}
+	else {
+		printf("Problem in get pixel data from a dicom file.\n");
+	}
+	
+	dicom::close_dicomfile(df);
+}
+else {
+	printf("Error in opening file: %s\n", dicom::get_error_message());
+}
+\endcode
+
+\subsection get_image_py Getting pixel data with Python
+
+\code
+
+import numpy
+
+def extract_pixeldata(filename):
+	df = dicom.open_dicomfile(filename)
+	if not df:
+		return None
+
+	width, height, prec, sgnd, ncomps, bpp, nframes = df.get_image_info()
+	pixeldata = df.get_pixeldata()
+	if not pixeldata:
+		return None
+	if width*height*prec == 0:
+		return None
+		
+	shape = [height, width]
+	if ncomps > 1:
+		shape += [ncomps]
+	if nframes > 1:
+		shape = [nframes] + shape
+	
+	if prec > 8:
+		dtype = numpy.int16 if sgnd else numpy.uint16
+	elif prec > 0:
+		dtype = numpy.int8 if sgnd else numpy.uint8	
+	else:
+		return None
+		
+	ar = numpy.fromstring(pixeldata, dtype=dtype)
+	ar.shape = shape
+	return ar
+	
+def extract_pixeldata_much_simpler_version(filename):
+	df = dicom.open_dicomfile(file)
+	if df:
+		return df.to_numpy_array(self)
+	else:
+		return None
+\endcode
+
+\sa
+
+dicom::dicomfile::get_image_info(),
+dicom::dicomfile::copy_pixeldata_to(),
+dicom::dicomfile::get_pixeldata_a()
+
+
+\section set_image Setting pixel data
+
+
+\sa
+
+dicom::dicomfile::set_pixeldata()
 
 */
