@@ -17,7 +17,7 @@ namespace dicom { //------------------------------------------------------
 
 // extract a file from zipfile -------------------------------------------
 
-DLLEXPORT void zipfile_extract_file_a(char *zipfn, char *fn,
+DLLEXPORT void zipfile_extract_file_a(const char *zipfn, const char *fn,
 		char **val_a, int *len_a)
 {
 	char *val=NULL; *val_a = val;
@@ -130,7 +130,7 @@ int __zipfile_get_list(unzFile uf, std::stringstream &ss)
     return err; // UNZ_OK or not
 }
 
-DLLEXPORT std::string zipfile_get_list(char *zipfn)
+DLLEXPORT std::string zipfile_get_list(const char *zipfn)
 {
 	unzFile uf=NULL;
 	std::stringstream ss;

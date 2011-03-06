@@ -157,7 +157,7 @@ LOG_DEBUG_MESSAGE("taglist_t{%p}::free_tags() - "
 
 // dicomdir --------------------------------------------------------------
 
-DLLEXPORT dicomdir* open_dicomdir(char *filename, opttype opt)
+DLLEXPORT dicomdir* open_dicomdir(const char *filename, opttype opt)
 {
 	dicomdir *dr = new dicomdir();
 	int ret = dr->load_from_file(filename, opt);
@@ -188,7 +188,7 @@ DLLEXPORT void close_dicomdir(dicomdir *dr)
 }
 
 
-int dicomdir::load_from_file(char *filename, opttype opt)
+int dicomdir::load_from_file(const char *filename, opttype opt)
 {
 	if (df) delete df;
 	if (root_dirrec) delete root_dirrec;
@@ -214,7 +214,7 @@ int dicomdir::load_from_file(char *filename, opttype opt)
 	return ret;
 }
 
-int dicomdir::load_from_data(char *data, int datasize, opttype opt)
+int dicomdir::load_from_data(const char *data, int datasize, opttype opt)
 {
 	if (df) delete df;
 	if (root_dirrec) delete root_dirrec;
@@ -246,16 +246,6 @@ dicomdir::dicomdir()
 	df = NULL;
 	root_dirrec = new dirrec_t;
 	root_dirrec->set_dirrec_type("ROOT");
-}
-
-dicomdir::dicomdir(char *data, int datasize)
-{
-	df = new dicomfile(data, datasize);
-	root_dirrec = new dirrec_t;
-	root_dirrec->set_dirrec_type("ROOT");
-
-	// (0004,1200)=OffsetOfTheFirstDirectoryRecordOfTheRootDirectoryEntity
-	analyze_directory_records(root_dirrec, (*df)[0x00041200]);
 }
 
 dicomdir::~dicomdir()
@@ -561,7 +551,7 @@ int dicomdir::add_dicomfile(dicomfile *df, char *ref_file_id)
 	return ret; // or DICOM_ERROR
 }
 
-int dicomdir::add_dicomfile(char *filename, char *ref_file_id)
+int dicomdir::add_dicomfile(const char *filename, char *ref_file_id)
 {
 	dicomfile *df = NULL;
 	int ret;
@@ -710,7 +700,7 @@ void dicomdir::build_dicomfile()
 	df->remove_dataelement(0x00080018);
 }
 
-void dicomdir::save_to_file(char *filename, opttype opt)
+void dicomdir::save_to_file(const char *filename, opttype opt)
 {
 	build_dicomfile();
 	df->save_to_file(filename, opt);

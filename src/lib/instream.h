@@ -30,7 +30,7 @@ class instream {
 
 public:
 	// instream from a file
-	instream(char *filename);
+	instream(const char *filename);
 	// instream from memory
 	instream(uint8 *data, size_t datasize, bool copydata=false);
 	// instream from 'base' instream

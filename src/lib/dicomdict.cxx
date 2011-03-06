@@ -160,7 +160,7 @@ int _compare_element_keyword(
 const int _sizeof_element_keyword_struct_ =
 		sizeof(element_keyword)/sizeof(_element_keyword_struct_);
 
-DLLEXPORT tagtype find_tag(char *keyword)
+DLLEXPORT tagtype find_tag(const char *keyword)
 {
 	struct _element_keyword_struct_ key, *result;
 

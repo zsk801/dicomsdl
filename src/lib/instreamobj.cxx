@@ -16,7 +16,7 @@ namespace dicom { //------------------------------------------------------
 
 // reading data from file ------------------------------------------------
 
-fileinstreamobj::fileinstreamobj(char *_fn)
+fileinstreamobj::fileinstreamobj(const char *_fn)
 {
 	filesize = 0;
 	fn = NULL;

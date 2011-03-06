@@ -29,6 +29,7 @@ rm -vf src/example/changetsuid
 rm -vf src/example/dicomfiledump
 rm -vf src/example/makedicomdir
 rm -vf src/example/test
+rm -vr src/example/example_getvalue
 rm -vf src/wrapper/python/dummy_proj
 
 rm -vf src/ext/ijg/8/*.c

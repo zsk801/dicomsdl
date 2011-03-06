@@ -568,9 +568,9 @@ dataelement* dataset::get_dataelement(tagtype tag)
 	}
 }
 
-dataelement* dataset::get_dataelement(char *tagstr)
+dataelement* dataset::get_dataelement(const char *tagstr)
 {
-	char *nextptr, *endptr = tagstr+strlen(tagstr);
+	char *nextptr, *endptr = (char *)tagstr+strlen(tagstr);
 
 	tagtype _tag;
 	int _seqidx;

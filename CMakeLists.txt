@@ -9,7 +9,7 @@
 
 cmake_minimum_required (VERSION 2.8)
 
-SET (dicomsdl_version 0.77)
+SET (dicomsdl_version 0.77.20110306)
 
 # ------------------------------------------------------------------------
 # User options

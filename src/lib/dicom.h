@@ -456,11 +456,11 @@ struct DLLEXPORT dataset {
 	     (gggg,eeee mean group and element number of tag in hex form)
 	  "0xggggeeee", "ggggeeee"
 	  "ggggeeee.0.ggggeeee", "KeyWord" */
-	dataelement* get_dataelement(char *tagstr);
+	dataelement* get_dataelement(const char *tagstr);
 
 	dataelement& operator[] (tagtype tag)
 		{ return *get_dataelement(tag); };
-	dataelement& operator[] (char *tagstr)
+	dataelement& operator[] (const char *tagstr)
 		{ return *get_dataelement(tagstr); };
 
 	// add function ------------------------------------------------------
@@ -529,7 +529,7 @@ private:
  *     OPT_LOAD_CONTINUE_ON_ERROR, OPT_LOAD_PARTIAL_FILE
  */
 DLLEXPORT dicomfile* open_dicomfile
-			(char *filename,
+			(const char *filename,
 			 opttype opt=default_load_opt, optarg arg=0);
 
 /*! Read and parse a DICOM file from memory
@@ -559,13 +559,13 @@ struct DLLEXPORT dicomfile: public dataset {
 
 	// read dicom file ---------------------------------------------------
 
-	int load_from_file(char *filename,
+	int load_from_file(const char *filename,
 			opttype opt=default_load_opt, optarg arg=0);
 	int load_from_data
-			(char *data, int datasize,
+			(const char *data, int datasize,
 			opttype opt=default_load_opt, optarg arg=0);
 
-	int save_to_file(char *filename, opttype opt=default_save_opt);
+	int save_to_file(const char *filename, opttype opt=default_save_opt);
 	int save_to_memory_a
 			(char **val_a, int *len_a, opttype opt=default_save_opt);
 
@@ -575,11 +575,6 @@ struct DLLEXPORT dicomfile: public dataset {
 	dataset* dataset_at(uint32 offset);
 
 	// ctor & dtor -------------------------------------------------------
-	// dicomfile("filename.dcm"); // read from file
-	// dicomfile(data, datasize); // read from buffer
-	// throw error string on error
-	dicomfile(char *data, int datasize=-1);
-
 	dicomfile() { stream = NULL; };
 	~dicomfile();
 
@@ -777,7 +772,7 @@ struct DLLEXPORT sequence {
  */
 
 DLLEXPORT dicomdir* open_dicomdir
-				(char *filename, opttype opt=default_load_opt);
+				(const char *filename, opttype opt=default_load_opt);
 DLLEXPORT dicomdir* open_dicomdir_from_memory
 				(char *data, int datasize, opttype opt=default_load_opt);
 DLLEXPORT void close_dicomdir(dicomdir *df);
@@ -811,20 +806,19 @@ struct DLLEXPORT dicomdir {
 	dirrec_t *root_dirrec;
 
 	int load_from_file
-			(char *filename, opttype opt=default_load_opt);
+			(const char *filename, opttype opt=default_load_opt);
 	int load_from_data
-			(char *data, int datasize, opttype opt=default_load_opt);
+			(const char *data, int datasize, opttype opt=default_load_opt);
 
-	void save_to_file(char *filename, opttype opt=default_save_opt);
+	void save_to_file(const char *filename, opttype opt=default_save_opt);
 	void save_to_memory_a
 			(char **val_a, int *len_a, opttype opt=default_save_opt);
 
 	dicomdir();
-	dicomdir(char *data, int datasize=-1);
 	~dicomdir();
 
 	int add_dicomfile(dicomfile *df, char *ref_file_id);
-	int add_dicomfile(char *filename, char *ref_file_id);
+	int add_dicomfile(const char *filename, char *ref_file_id);
 
 	void build_dicomfile();
 
@@ -850,7 +844,7 @@ DLLEXPORT void reset_tags_for_dicomdir();
 DLLEXPORT vrtype get_tag_vr (tagtype tag);
 DLLEXPORT const char* get_tag_name (tagtype tag);
 DLLEXPORT const char* get_tag_keyword (tagtype tag);
-DLLEXPORT tagtype find_tag(char *keyword);
+DLLEXPORT tagtype find_tag(const char *keyword);
 
 DLLEXPORT uidtype uidvalue_to_uid (const char *uidvalue);
 DLLEXPORT const char *uid_to_uidvalue (uidtype uid);
@@ -882,14 +876,14 @@ DLLEXPORT char *get_error_message();
 
 // select decoder / encoder for decoding / encoding pixel data
 
-DLLEXPORT int use_decoder(uidtype tsuid, char *codec_name);
-DLLEXPORT int use_encoder(uidtype tsuid, char *codec_name);
+DLLEXPORT int use_decoder(uidtype tsuid, const char *codec_name);
+DLLEXPORT int use_encoder(uidtype tsuid, const char *codec_name);
 
 // support functions for zipped DICOM files
 
-DLLEXPORT void test_unzip(char *filename);
-DLLEXPORT std::string zipfile_get_list(char *filename);
-DLLEXPORT void zipfile_extract_file_a(char *zipfn, char *fn,
+DLLEXPORT void test_unzip(const char *filename);
+DLLEXPORT std::string zipfile_get_list(const char *filename);
+DLLEXPORT void zipfile_extract_file_a(const char *zipfn, const char *fn,
 		char **val_a, int *len_a);
 
 // uid's length should not exceed 64 bytes

@@ -11,7 +11,7 @@
 
 namespace dicom { //------------------------------------------------------
 
-DLLEXPORT void test_unzip(char *filename)
+DLLEXPORT void test_unzip(const char *filename)
 {
 
 }
