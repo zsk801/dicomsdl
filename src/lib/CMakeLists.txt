@@ -38,7 +38,7 @@ SET(C_CXX_SOURCES
 	sequence.cxx
 	zipfile.cxx
 	uidutil.cxx
-	utilfunc.cxx
+	fileutil.cxx
 )
 
 

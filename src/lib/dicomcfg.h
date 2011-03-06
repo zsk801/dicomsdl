@@ -12,14 +12,14 @@
 
 #define __DICOMSDL_VERSION__ "0.77.20110306"
 
-/* #undef __DEBUG__ */
+#define __DEBUG__
 
 /* ---------------------------------------------------------------------*/
 
-/* #undef _HAVE_BASETSD_H */
-#define _HAVE_STDINT_H
-/* #undef _HAVE_WINDOWS_H */
-#define _HAVE_DIRENT_H
+#define _HAVE_BASETSD_H
+/* #undef _HAVE_STDINT_H */
+#define _HAVE_WINDOWS_H
+/* #undef _HAVE_DIRENT_H */
 
 /* #undef BUILD_SHARED_LIBS */
 
