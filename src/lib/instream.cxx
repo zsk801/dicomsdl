@@ -19,7 +19,7 @@ namespace dicom { //------------------------------------------------------
 
 // ctor ------------------------------------------------------------------
 
-instream::instream(char *_filename)
+instream::instream(const char *_filename)
 {
 	data = NULL;
 	basestream = NULL;
@@ -27,7 +27,7 @@ instream::instream(char *_filename)
 	// check _filename contains .zip -------------------------
 	std::string zipfn, fn_in_zipfn;
 	if (strlen(_filename) > 8 && memcmp(_filename, "zip:///", 7) == 0) {
-		char *_zipfn = _filename + 7;
+		char *_zipfn = (char *)_filename + 7;
 		char *_fn = strrchr(_zipfn, ':');
 		if (_fn) _fn++;
 

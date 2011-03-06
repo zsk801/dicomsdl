@@ -32,7 +32,7 @@ class fileinstreamobj: public instreamobj {
 	char *fn;
 
 public:
-	fileinstreamobj(char *_fn);
+	fileinstreamobj(const char *_fn);
 	~fileinstreamobj() { close(); };
 
 	bool is_valid();

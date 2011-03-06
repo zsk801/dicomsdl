@@ -142,7 +142,7 @@ void register_codecs()
 	}
 }
 
-DLLEXPORT int use_decoder(uidtype tsuid, char *codec_name)
+DLLEXPORT int use_decoder(uidtype tsuid, const char *codec_name)
 {
 	if (codec_list[0].name == NULL) register_codecs();
 
@@ -160,7 +160,7 @@ DLLEXPORT int use_decoder(uidtype tsuid, char *codec_name)
 	return DICOM_DECODE_ERROR;
 }
 
-DLLEXPORT int use_encoder(uidtype tsuid, char *codec_name)
+DLLEXPORT int use_encoder(uidtype tsuid, const char *codec_name)
 {
 	if (codec_list[0].name == NULL) register_codecs();
 

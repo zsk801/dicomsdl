@@ -159,7 +159,7 @@ void example_05_get_string_simpler(dicom::dicomfile *df)
 	patient_name = (*df)["PatientName"].to_string("N/A");
 	printf("  Patient name = %s\n", patient_name.c_str());
 	// or
-	patient_name = (*df)["PatientName"];
+	patient_name = (std::string)(*df)["PatientName"];
 	printf("  Patient name = %s\n", patient_name.c_str());
 }
 

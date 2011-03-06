@@ -15,25 +15,7 @@
 
 namespace dicom { //------------------------------------------------------
 
-dicomfile::dicomfile(char *data, int datasize)
-{
-	int ret;
-	if (datasize == -1 || strlen(data) == datasize)
-		// data contains filename
-		ret = load_from_file(data);
-	else
-		// data is memory buffer contains dicomfile image
-		ret = load_from_data(data, datasize);
-
-	if (ret < 0) {
-		// ~dicomfile
-		if (stream)
-			delete (instream *)stream;
-		throw get_error_message();
-	}
-};
-
-int dicomfile::load_from_file(char *filename, opttype opt, optarg arg)
+int dicomfile::load_from_file(const char *filename, opttype opt, optarg arg)
 {
 
 	LOG_DEBUG_MESSAGE(
@@ -59,7 +41,7 @@ int dicomfile::load_from_file(char *filename, opttype opt, optarg arg)
 	}
 }
 
-int dicomfile::load_from_data(char *data, int datasize, opttype opt, optarg arg)
+int dicomfile::load_from_data(const char *data, int datasize, opttype opt, optarg arg)
 {
 	LOG_DEBUG_MESSAGE(
 			"dicomfile{%p}::load_from_data(%p, %d, %016llx)\n",
@@ -120,7 +102,7 @@ void dicomfile::_read_from_stream(opttype opt, optarg arg)
 	}
 }
 
-DLLEXPORT dicomfile* open_dicomfile(char *filename, opttype opt, optarg arg)
+DLLEXPORT dicomfile* open_dicomfile(const char *filename, opttype opt, optarg arg)
 {
 	dicomfile *df = new dicomfile();
 	int ret = df->load_from_file(filename, opt, arg);
@@ -152,7 +134,7 @@ DLLEXPORT void close_dicomfile(dicomfile *df)
 	if (df) delete df;
 }
 
-int dicomfile::save_to_file(char *filename, opttype opt)
+int dicomfile::save_to_file(const char *filename, opttype opt)
 {
 	char *val=NULL;
 	FILE *fout=NULL;
