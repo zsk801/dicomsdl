@@ -893,6 +893,15 @@ DLLEXPORT std::string gen_uid(char* base_uid=NULL);
 DLLEXPORT void set_uid_prefix(char *u=NULL);
 DLLEXPORT int is_valid_uid(char *u);
 
+// Utility functions
+
+/*! Find files using POSIX glob() function
+ *
+ * @param pattern file name pattern for POSIX glob() function
+ * @return list of file name string
+ */
+std::list<std::string> find_files(const char *pattern);
+
 } // namespace dicom -----------------------------------------------------
 
 #endif //  __DICOM_H__
