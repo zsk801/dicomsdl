@@ -15,6 +15,7 @@
 #include <set>
 #include <vector>
 #include <string>
+#include <list>
 
 namespace dicom { //------------------------------------------------------
 
