@@ -12,7 +12,7 @@
 
 #define __DICOMSDL_VERSION__ "0.77.20110306"
 
-/* #undef __DEBUG__ */
+#define __DEBUG__
 
 /* ---------------------------------------------------------------------*/
 
@@ -39,8 +39,8 @@
 	#define DLLEXPORT
 #endif
 
-#define USE_OPJ_CODEC
-#define USE_IJG_CODEC
+/* #undef USE_OPJ_CODEC */
+/* #undef USE_IJG_CODEC */
 /* #undef USE_IPP_CODEC */
 /* #undef USE_LT_CODEC */
 
