@@ -1,0 +1,190 @@
+/* -----------------------------------------------------------------------
+ *
+ * $Id: $
+ *
+ * Copyright 2010, Kim, Tae-Sung. All rights reserved.
+ * See copyright.txt for details
+ *
+ * -------------------------------------------------------------------- */
+
+#ifndef __DICOMCFG_H__
+#define __DICOMCFG_H__
+
+#define __DICOMSDL_VERSION__ "@dicomsdl_version@"
+
+#cmakedefine __DEBUG__
+
+/* ---------------------------------------------------------------------*/
+
+#cmakedefine _HAVE_BASETSD_H
+#cmakedefine _HAVE_STDINT_H
+#cmakedefine _HAVE_WINDOWS_H
+#cmakedefine _HAVE_DIRENT_H
+
+#cmakedefine BUILD_SHARED_LIBS
+
+#if (defined(_MSC_VER) && defined(BUILD_SHARED_LIBS))
+	#ifdef _BUILD_DLL
+		#pragma warning (disable : 4251)
+		#define DLLEXPORT __declspec(dllexport)
+	#else
+		#define DLLEXPORT __declspec(dllimport)
+	#endif
+#else
+#define DLLEXPORT
+#endif
+
+#ifdef SWIG
+	#undef DLLEXPORT
+	#define DLLEXPORT
+#endif
+
+#cmakedefine USE_OPJ_CODEC
+#cmakedefine USE_IJG_CODEC
+#cmakedefine USE_IPP_CODEC
+#cmakedefine USE_LT_CODEC
+
+/* define types --------------------------------------------------------*/
+
+#ifdef _HAVE_BASETSD_H
+#include <basetsd.h>
+typedef INT8	int8;	
+typedef UINT8	uint8;	
+typedef INT16	int16;	
+typedef UINT16	uint16;
+typedef INT32	int32;	
+typedef UINT32	uint32;
+typedef INT64	int64;	
+typedef UINT64	uint64;
+
+#endif
+
+#ifdef _HAVE_STDINT_H
+#include <stdint.h>
+typedef int8_t		int8;	
+typedef uint8_t		uint8;	
+typedef int16_t		int16;	
+typedef uint16_t	uint16;
+typedef int32_t		int32;	
+typedef uint32_t	uint32;
+typedef int64_t		int64;	
+typedef uint64_t	uint64;
+#endif
+
+typedef float		float32;
+typedef double		float64;
+
+#undef NULL
+#define NULL		0
+
+/* pointer to value ----------------------------------------------------*/
+
+#undef BIG_ENDIAN
+#undef LITTLE_ENDIAN
+
+#define BIG_ENDIAN		4321
+#define LITTLE_ENDIAN	1234
+
+#cmakedefine BIG_ENDIAN_MACHINE
+
+#ifdef BIG_ENDIAN_MACHINE
+#define MACHINE_ENDIANNESS	BIG_ENDIAN
+#else
+#define MACHINE_ENDIANNESS	LITTLE_ENDIAN
+#endif
+
+#define ptr_as_uint8(p)  (*(uint8 *)(p))
+#define ptr_as_int8(p)	 (*(int8 *)(p))
+#define ptr_as_uint16(p) (*(uint16 *)(p))
+#define ptr_as_uint32(p) (*(uint32 *)(p))
+#define ptr_as_int16(p)  (*(int16 *)(p))
+#define ptr_as_int32(p)  (*(int32 *)(p))
+#define ptr_as_float32(p)  (*(float32 *)(p))
+#define ptr_as_float64(p)  (*(float64 *)(p))
+
+#define ptr_as_uint8_p(p)  ((uint8 *)(p))
+#define ptr_as_int8_p(p)   ((int8 *)(p))
+#define ptr_as_uint16_p(p) ((uint16 *)(p))
+#define ptr_as_uint32_p(p) ((uint32 *)(p))
+#define ptr_as_int16_p(p)  ((int16 *)(p))
+#define ptr_as_int32_p(p)  ((int32 *)(p))
+#define ptr_as_float32_p(p)  ((float32 *)(p))
+#define ptr_as_float64_p(p)  ((float64 *)(p))
+
+#if (MACHINE_ENDIANNESS == LITTLE_ENDIAN)
+
+#define le_get_uint16(p) (*(uint16 *)(p))
+#define le_get_uint32(p) (*(uint32 *)(p))
+#define le_get_int16(p)  (*(int16 *)(p))
+#define le_get_int32(p)  (*(int32 *)(p))
+
+#define be_get_uint16(p) \
+	    (((uint8 *)(p))[1] + (((uint8 *)(p))[0]<<8))
+#define be_get_uint32(p) \
+		(((uint8 *)(p))[3]      + (((uint8 *)(p))[2]<<8) + \
+		(((uint8 *)(p))[1]<<16) + (((uint8 *)(p))[0]<<24))
+#define be_get_int16(p) \
+		(int16)(((uint8 *)(p))[1] + (((uint8 *)(p))[0]<<8))
+#define be_get_int32(p) \
+		(int32)(((uint8 *)(p))[3]      + (((uint8 *)(p))[2]<<8) + \
+			   (((uint8 *)(p))[1]<<16) + (((uint8 *)(p))[0]<<24))
+
+#define le_put_uint32(p, v) (*(uint32 *)(p) = uint32(v))
+#define le_put_uint16(p, v) (*(uint16 *)(p) = uint16(v))
+#define le_put_int32(p, v) (*(int32 *)(p) = int32(v))
+#define le_put_int16(p, v) (*(int16 *)(p) = int16(v))
+
+#define be_put_uint32(p, v) (*(uint32 *)(p) = \
+				((uint32(v)&0xff) << 24) + ((uint32(v)&0xff00) << 8) + \
+				((uint32(v)&0xff0000) >> 8) + ((uint32(v)&0xff000000) >> 24))
+#define be_put_uint16(p, v) (*(uint16 *)(p) = \
+				((uint16(v)&0xff)<<8) + ((uint32(v)&0xff00) >> 8))
+#define be_put_int32(p, v) (*(int32 *)(p) = \
+				((int32(v)&0xff) << 24) + ((int32(v)&0xff00) << 8) + \
+				((int32(v)&0xff0000) >> 8) + ((int32(v)&0xff000000) >> 24))
+#define be_put_int16(p, v) (*(int16 *)(p) = \
+				((int16(v)&0xff)<<8) + ((int32(v)&0xff00) >> 8))
+
+#else /* if big-endian machine */
+
+#define be_get_uint16(p) (*(uint16 *)(p))
+#define be_get_uint32(p) (*(uint32 *)(p))
+#define be_get_int16(p) (*(int16 *)(p))
+#define be_get_int32(p) (*(int32 *)(p))
+
+#define le_get_uint16(p) \
+	    (((uint8 *)(p))[0] + (((uint8 *)(p))[1]<<8))
+#define le_get_uint32(p) \
+		(((uint8 *)(p))[0]      + (((uint8 *)(p))[1]<<8) + \
+		(((uint8 *)(p))[2]<<16) + (((uint8 *)(p))[3]<<24))
+#define le_get_int16(p) \
+		(int16)(((uint8 *)(p))[0] + (((uint8 *)(p))[1]<<8))
+#define le_get_int32(p) \
+		(int32)(((uint8 *)(p))[0]      + (((uint8 *)(p))[1]<<8) + \
+			   (((uint8 *)(p))[2]<<16) + (((uint8 *)(p))[3]<<24))
+
+#define be_put_uint32(p, v) (*(uint32 *)(p) = uint32(v))
+#define be_put_uint16(p, v) (*(uint16 *)(p) = uint16(v))
+#define be_put_int32(p, v) (*(int32 *)(p) = int32(v))
+#define be_put_int16(p, v) (*(int16 *)(p) = int16(v))
+
+#define le_put_uint32(p, v) (*(uint32 *)(p) = \
+				((uint32(v)&0xff) << 24) + ((uint32(v)&0xff00) << 8) + \
+				((uint32(v)&0xff0000) >> 8) + ((uint32(v)&0xff000000) >> 24))
+#define le_put_uint16(p, v) (*(uint16 *)(p) = \
+				((uint16(v)&0xff)<<8) + ((uint32(v)&0xff00) >> 8))
+#define le_put_int32(p, v) (*(int32 *)(p) = \
+				((int32(v)&0xff) << 24) + ((int32(v)&0xff00) << 8) + \
+				((int32(v)&0xff0000) >> 8) + ((int32(v)&0xff000000) >> 24))
+#define le_put_int16(p, v) (*(int16 *)(p) = \
+				((int16(v)&0xff)<<8) + ((int32(v)&0xff00) >> 8))
+
+#endif /* endif big-endian machine */
+
+/* misc ----------------------------------------------------------------*/
+
+#ifdef _MSC_VER
+#define snprintf _snprintf
+#endif
+
+#endif /* __DICOMCFG_H__ */

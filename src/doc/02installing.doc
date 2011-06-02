@@ -1,0 +1,106 @@
+/** \page installing Installing
+
+\section gettingsoftware Getting Software
+
+You can get the source code, binaries and installer for python at the
+http://code.google.com/p/dicomsdl .
+
+\section installing Installing
+
+DICOM SDL needs cmake (www.cmake.org) to compile. DICOM SDL was successfully
+compiled and ran on following environments
+
+	- Microsoft Windows x86/x64 using Microsoft visual studio 2008
+	- CentOS x64 5.4 using gcc 4.1.2
+	- Ubuntu x64 10.10 using gcc 4.4.5
+	- Mac OS X 10.5 (ppc) using xcode 3.1.2
+	- Mac OS X 10.6 (intel) using Xcode 3.2.5 (gcc 4.2.1)
+
+DICOM SDL is also expected to be compiled successfully at other Linux x86/x64
+and intel MacOS platforms.
+
+\section compiling Compiling
+
+\subsection usingmsvc Using VisualStudio C++ compilers
+
+	-# edit <code>config_cmake.bat</code> and run it.
+	-# do `nmake.exe install`
+
+\subsection usingcc GCC (Linux or OSX)
+
+	-# edit <code>config_cmake.sh</code> and run it.
+	-# do `make install`
+
+\subsection noteonbuildrpm Note on build rpm file in Linux
+
+You may get an error message like this if you try to build rpm installer
+under RedHat or CentOS linux. 
+
+\verbatim
+	error: Installed (but unpackaged) file(s) found:
+	   ... .../site-packages/dicom.pyo
+\endverbatim
+
+   
+One of the workarounds to revolve this problem is modifying
+<code>[pythondir]/distutils/command/build_rpm.py</code>.
+
+
+-# find lines like this in <code>[pythondir]/distutils/command/build_rpm.py</code>.
+
+\verbatim
+			   ('install', 'install_script',
+			    ("%s install "
+			     "--root=$RPM_BUILD_ROOT"
+\endverbatim
+	     
+-# add `-O1` option
+
+\verbatim
+			   ('install', 'install_script',
+			    ("%s install -O1 "
+			     "--root=$RPM_BUILD_ROOT"
+\endverbatim
+
+
+ref. https://bugzilla.redhat.com/show_bug.cgi?id=530685
+
+
+\subsection linking_dicomsdl Linking DICOMSDL into Your Projects
+
+Compiled binaries will go into <code>./build</code> directory. Includes
+<code>dicom.h</code>, <code>dicomcfg.h</code>, <code>dicomsdl.lib</code>, ... into your project
+and just add line <code>#include "dicom.h"</code> into your program codes.
+
+\subsection buildonubuntu Building and installing python extention on Ubuntu
+
+-# Edit <code>config_cmake.sh</code> and turn on flags
+   <code>DPYTHON_BUILD_EXT</code> and <code>DPYTHON_INSTALL_EXT</code>
+-# <code>sudo apt-get install g++ swig python-dev rpm</code>
+-# <code>sudo ./config_cmake.sh</code>
+-# <code>sudo make</code>
+
+\subsection buildwithipp Building with Intel IPP Library
+
+DICOMSDL can utilize power of IPP in managing JPEG2000 images.
+It has been tested in Win32 platform.
+
+Requirement
+- Intel IPP 7.0 update 2 or new version; previous versions had problems in
+  decoding some JPEG2000 images.
+- Main Samples for Intel IPP 7.0.2, available at
+  <a href="http://software.intel.com/en-us/articles/intel-integrated-performance-primitives-code-samples/">
+  Code sample page at Intel website</a>.
+
+Open <code>config_cmake.bat</code>, and edit flags and options like this.
+Path to IPP and code sample should be changed according to your environment.
+
+\verbatim
+set OPTION=%OPTION% -DUSE_IPP_CODEC=ON
+set OPTION=%OPTION% -DIPP_INCLUDE:string="c:\Program Files (x86)\Intel\ComposerXE-2011\ipp\include"
+set OPTION=%OPTION% -DIPP_LIBPATH:string="c:\Program Files (x86)\Intel\ComposerXE-2011\ipp\lib\ia32"
+set OPTION=%OPTION% -DIPP_SAMPLEROOT:string="x\ipp-samples"
+set OPTION=%OPTION% -DIPP_UICBINPATH:string="x\ipp-samples\image-codecs\uic\_bin\ia32_cl9"
+\endverbatim
+
+*/ 
