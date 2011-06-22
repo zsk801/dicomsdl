@@ -70,7 +70,10 @@ void listdir_with_pattern(
 			if (fname == "." || fname == "..")
 				continue;
 			if (subpat == "") {
-				fnlist.push_back(base+fname);
+				std::string fn = base+fname;
+				if (fn.substr(0,2) == std::string(".")+PATHSEP)
+					fn = fn.substr(2); // remove unnecessary heading '.\'
+				fnlist.push_back(fn);
 			} else {
 				process_pattern(base+fname+PATHSEP, subpat, fnlist);
 			}
