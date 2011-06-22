@@ -62,15 +62,15 @@ public:
 
 int main(int argc, char **argv)
 {
-	optparser opt;
+/*	optparser opt;
 
 	opt.add_flagopt("v", "verbose", "verbose");
 	opt.add_flagopt("q", "quiet", "quiet");
 	opt.add_flagopt("e", "extract", "extract");
 	opt.add_argopt("k", "keyword", "keyword");
+*/
 
-
-/*	if (argc < 2) {
+	if (argc < 2) {
 		puts("dicomfiledump input.dcm");
 		return 0;
 	}
@@ -84,7 +84,6 @@ int main(int argc, char **argv)
 	} else {
 		printf("%s\n", dicom::get_error_message());
 	}
-*/
 
 	return 0;
 }
