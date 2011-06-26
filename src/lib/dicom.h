@@ -492,6 +492,10 @@ struct DLLEXPORT dataset {
 
 	void get_pixeldata_a(char **val_a, int *len_a);
 	int copy_pixeldata_to(char *buf, int rowstep, int framestep, int idx=-1);
+
+	int copy_pixeldata_to(void *buf, int rowstep, int framestep, int idx=-1)
+	{ return copy_pixeldata_to((char *)buf, rowstep, framestep, idx); }
+
 	int set_pixeldata(uidtype tsuid, char *buf,
 		int width, int height, int prec, int sgnd, int ncomps, int nframes,
 		int rowstep, int framestep, int quality=0);
