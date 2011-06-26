@@ -1,0 +1,16 @@
+1. Download DICOM standard documents.
+ftp://medical.nema.org/medical/Dicom/2009/09_06pu3.doc
+ftp://medical.nema.org/medical/Dicom/2009/09_07pu2.doc
+
+2. Convert tables of Data Element and UID registry in doc file
+   into .csv format file
+   
+   * check extency of special character such as '¥ì' or '¡©'
+   
+3. Run 'python process_dict.py'
+   This python script will product two file;
+     'dicomdict.hxx' and 'dicomdict.inc.cxx'
+
+4. put dicomdict.hxx into 'dicom.h'
+   copy dicomdict.inc.cxx to the directory where dicomdic.cxx locates.
+   
