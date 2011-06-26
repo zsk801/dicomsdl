@@ -22,3 +22,4 @@ SET (C_CXX_SOURCES
 
 CONFIGURE_FILE(openjpeg_mangled.h libopenjpeg/openjpeg_mangled.h COPYONLY) 
 CONFIGURE_FILE(openjpeg.h libopenjpeg/openjpeg.h COPYONLY) 
+CONFIGURE_FILE(opj_config.h.in.user libopenjpeg/opj_config.h COPYONLY) 
