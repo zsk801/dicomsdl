@@ -1089,8 +1089,6 @@ void dataelement::_save(void *ostream, uidtype tsuid, opttype opt)
 {
 	outstream *os = (outstream *)ostream;
 
-	uint8 buf[256];
-
 	int endian =
 		(tsuid==UID_EXPLICIT_VR_BIG_ENDIAN ? BIG_ENDIAN:LITTLE_ENDIAN);
 	int explicit_vr = (tsuid != UID_IMPLICIT_VR_LITTLE_ENDIAN);

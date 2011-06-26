@@ -16,6 +16,7 @@ configure_file (
 SET (HEADER_FILES
 	dicom.h
 	dicomcfg.h
+	utilfunc.h
 )
 
 SET(C_CXX_SOURCES
