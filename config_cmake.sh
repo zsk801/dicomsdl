@@ -27,4 +27,10 @@ echo OPTIONS ARE = $opt
 
 #opt="$opt -D PYTHON_INCLUDE_DIR:STRING=/opt/python26/include/python2.6"
 #opt="$opt -D PYTHON_LIBRARY:STRING=/opt/python26/lib/libpython2.6.so"
+
+pypath="/System/Library/Frameworks/Python.framework/Versions/2.6"
+opt="$opt -D PYTHON_INCLUDE_DIR:STRING=${pypath}/include/python2.6"
+opt="$opt -D PYTHON_LIBRARY:STRING=${pypath}/Python"
+opt="$opt -D PYTHON_EXECUTABLE:STRING=/usr/bin/python"
+
 cmake -G"Unix Makefiles"  $opt .
