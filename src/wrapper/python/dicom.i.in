@@ -424,6 +424,40 @@
 %include "dicom.h"
 
 
+// make functions that enables multithread -------------------------------
+
+%inline %{
+dicom::dicomfile* open_dicomfile_thread
+			(const char *filename,
+			 dicom::opttype opt=dicom::default_load_opt,
+			 dicom::optarg arg=0)
+{
+	dicom::dicomfile* dfobj;
+	
+	Py_BEGIN_ALLOW_THREADS
+	dfobj = dicom::open_dicomfile(filename, opt, arg);
+	Py_END_ALLOW_THREADS
+	
+	return dfobj;
+}
+%}
+
+%inline %{
+int copy_pixeldata_thread(
+	dicom::dicomfile* dfobj,
+	void *buf, int rowstep, int framestep, int idx=-1)
+{
+	int ret;
+	
+	Py_BEGIN_ALLOW_THREADS
+	ret = dfobj->copy_pixeldata_to((char *)buf, rowstep, framestep, idx);
+	Py_END_ALLOW_THREADS
+	
+	return ret;
+}		 
+
+%}
+
 // wrappers written in python codes --------------------------------------
 
 %pythoncode %{
