@@ -898,6 +898,16 @@ DLLEXPORT std::string gen_uid(char* base_uid=NULL);
 DLLEXPORT void set_uid_prefix(char *u=NULL);
 DLLEXPORT int is_valid_uid(char *u);
 
+// functions for sorting dicomfile objects
+DLLEXPORT int compare_dataelement(dataelement *de_a, dataelement *de_b);
+
+/*! Compare two dicomfile object
+ * @param keys comma seperated key list "00200032,00200013"
+ * @return 1 if a>b, 0 if a=b, -1 if a<b
+ */
+DLLEXPORT int compare_dicomfile(
+		dicomfile *de_a, dicomfile *de_b, char *keys);
+
 } // namespace dicom -----------------------------------------------------
 
 #endif //  __DICOM_H__
