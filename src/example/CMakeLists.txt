@@ -3,6 +3,7 @@ SET (EXAMPLE_SOURCES
 	dicomfiledump
 	makedicomdir
 	example_getvalue
+	test
 )
 
 SET (PY_EXAMPLE_SOURCES

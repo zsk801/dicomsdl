@@ -28,7 +28,9 @@
 %newobject dicom::open_dicomfile;
 %newobject dicom::open_dicomfile_from_memory;
 // use del (object) rather than close_dicomfile(object)
-%ignore dicom::close_dicomfile; 
+%ignore dicom::close_dicomfile;
+
+%newobject dicom::pick_dataelements; 
 
 %newobject dicom::open_dicomdir;
 %newobject dicom::open_dicomdir_from_memory;
@@ -40,7 +42,7 @@
 
 %typemap(in, numinputs=1) (char *data, int datasize) {
     if (!PyString_Check($input))
-        { PyErr_SetString(PyExc_ValueError, "need string"); return NULL; }
+        { PyErr_SetString(PyExc_TypeError, "need string"); return NULL; }
     Py_ssize_t _len;
     PyString_AsStringAndSize($input, &$1, &_len);
     $2 = _len;
@@ -48,7 +50,7 @@
 
 %typemap(in, numinputs=1) (const char *data, int datasize) {
     if (!PyString_Check($input))
-        { PyErr_SetString(PyExc_ValueError, "need string"); return NULL; }
+        { PyErr_SetString(PyExc_TypeError, "need string"); return NULL; }
     Py_ssize_t _len;
     PyString_AsStringAndSize($input, &$1, &_len);
     $2 = _len;
@@ -191,8 +193,8 @@
     
     if (errflag) {
     	if ($1) { delete [] $1; $1 = NULL; }
-        PyErr_SetString(PyExc_ValueError, "need list of "
-        								  "multiple 'int' values");
+        PyErr_SetString(PyExc_TypeError, "need list of "
+        							  "multiple 'int' values");
         return NULL;
     }
 }
@@ -233,8 +235,8 @@
     
     if (errflag) {
     	if ($1) { delete [] $1; $1 = NULL; }
-        PyErr_SetString(PyExc_ValueError, "need list of "
-        								  "multiple 'float' values");
+        PyErr_SetString(PyExc_TypeError, "need list of "
+        								 "multiple 'float' values");
         return NULL;
     }
 }
@@ -276,8 +278,8 @@
     
     if (errflag) {
     	if ($1) { delete [] $1; $1 = NULL; }
-        PyErr_SetString(PyExc_ValueError, "need list of "
-        								  "multiple 'uidtype' values");
+        PyErr_SetString(PyExc_TypeError, "need list of "
+        								 "multiple 'uidtype' values");
         return NULL;
     }
 }
@@ -320,8 +322,8 @@
     
     if (errflag) {
     	if ($1) { free($1); $1 = NULL; }
-        PyErr_SetString(PyExc_ValueError, "need list of "
-        								  "multiple 'string' values");
+        PyErr_SetString(PyExc_TypeError, "need list of "
+        								 "multiple 'string' values");
         return NULL;
     }
 }
@@ -330,6 +332,43 @@
     if ($1) free($1);
 }
 
+// typemap for an array of NULL-terminated staging
+
+
+// This tells SWIG to treat char ** as a special case
+%typemap(in) (char **ARGV) {
+	if (PyList_Check($input)) {
+		int size = PyList_Size($input);
+		int i = 0;
+		$1 = (char **) malloc((size+1)*sizeof(char *));
+		for (i = 0; i < size; i++) {
+			PyObject *o = PyList_GetItem($input,i);
+			if (PyString_Check(o))
+				$1[i] = PyString_AsString(PyList_GetItem($input,i));
+			else {
+				PyErr_SetString(PyExc_TypeError,"need list of "
+        								  "multiple 'string' values");
+				free($1);
+				return NULL;
+			}
+		}
+		$1[i] = 0;
+ 	} else {
+		PyErr_SetString(PyExc_TypeError,"need list of "
+        								"multiple 'string' values");
+		return NULL;
+	}
+}
+
+%typemap(freearg) (char **ARGV) {
+	free((char *) $1);
+}
+
+%apply char **ARGV { char **keys };
+%apply char **ARGV { char **fnlist };
+%apply char **ARGV { char **study_keys };
+%apply char **ARGV { char **ser_keys };
+%apply char **ARGV { char **inst_keys };
 
 // typemaps for output ---------------------------------------------------
 

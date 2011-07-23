@@ -886,7 +886,6 @@ DLLEXPORT int use_encoder(uidtype tsuid, const char *codec_name);
 
 // support functions for zipped DICOM files
 
-DLLEXPORT void test_unzip(const char *filename);
 DLLEXPORT std::string zipfile_get_list(const char *filename);
 DLLEXPORT void zipfile_extract_file_a(const char *zipfn, const char *fn,
 		char **val_a, int *len_a);
@@ -902,11 +901,17 @@ DLLEXPORT int is_valid_uid(char *u);
 DLLEXPORT int compare_dataelement(dataelement *de_a, dataelement *de_b);
 
 /*! Compare two dicomfile object
- * @param keys comma seperated key list "00200032,00200013"
+ * @param list of string, ends with an NULL element
+ * 		\verbatim
+ * 		char args[] = {"00020002", "00020004", NULL}
+ * 		\endverbatim
  * @return 1 if a>b, 0 if a=b, -1 if a<b
  */
-DLLEXPORT int compare_dicomfile(
-		dicomfile *de_a, dicomfile *de_b, char *keys);
+DLLEXPORT int compare_dataset(
+		dataset *ds_a, dataset *ds_b, char **keys);
+
+DLLEXPORT dataset* pick_dataelements(dicomfile *df, char **keys);
+DLLEXPORT void test_func(char **fnlist, char **study_keys, char **ser_keys, char **inst_keys);
 
 } // namespace dicom -----------------------------------------------------
 
