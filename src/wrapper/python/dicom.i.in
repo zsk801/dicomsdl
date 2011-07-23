@@ -364,10 +364,10 @@
 	free((char *) $1);
 }
 
-%apply char **ARGV { char **keys };
-%apply char **ARGV { char **fnlist };
 %apply char **ARGV { char **study_keys };
+%apply char **ARGV { char **study_desc_keys };
 %apply char **ARGV { char **ser_keys };
+%apply char **ARGV { char **ser_desc_keys };
 %apply char **ARGV { char **inst_keys };
 
 // typemaps for output ---------------------------------------------------
