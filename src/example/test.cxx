@@ -1,23 +1,91 @@
 #include <dicom.h>
+#include <list>
+#include <string>
+#include <fstream>
 
 int main()
 {
-	char *fnlist[] = {"c:\\lab\\sample\\img001.dcm",
-			"c:\\lab\\sample\\24bpp1.dcm",
-			"c:\\lab\\sample\\24bpp2.dcm",
-			"c:\\lab\\sample\\img001.dcm", NULL};
-	char *study_keys[] = {
-			"00080020","00081030","0020000d",NULL
+
+	std::list<std::string> fnlist;
+	std::list<std::string>::iterator it;
+
+	std::fstream fin("/Volumes/StorageOSX/Lab/tmp/fnlist.txt", std::fstream::in);
+
+	if (!fin.good()) {
+		fin.close();
+		return -1;
+	}
+
+	std::string l;
+
+	const char *study_keys[] = {
+			"00100020", // PatientID
+			"00080020", // StudyDate
+			"00081030", // StudyTime
+			"0020000d", // StudyInstanceUID
+			NULL
 	};
-	char *ser_keys[] = {
-			"00080031","0008103e","00200011","0020000e",NULL
+	const char *study_desc_keys[] = {
+			"00080020", // StudyDate
+			"00081030", // StudyDescription
+			NULL
 	};
-	char *inst_keys[] = {
-			"00200013","00080018",NULL
+	const char *ser_keys[] = {
+			"00200011", // SeriesNumber
+			"00080031", // SeriesTime
+			"0020000e", // SeriesInstanceUID
+			"0008103e", // SeriesDescription
+			NULL
 	};
-	dicom::test_func(fnlist, study_keys, ser_keys, inst_keys);
+	const char *ser_desc_keys[] = {
+			"00200011", // SeriesNumber
+			"0008103e", // SeriesDescription
+			NULL
+	};
+	const char *inst_keys[] = {
+			"00200032", // ImagePositionPatient
+			"00200013", // InstanceNumber
+			"00080018", // SOPInstanceUID
+			NULL
+	};
+
+	dicom::dicomfile_sorter dfsorter(study_keys, study_desc_keys,
+			ser_keys, ser_desc_keys, inst_keys);
+
+	while (1) {
+		std::getline(fin, l);
+		if (fin.eof()) break;
+		dicom::dicomfile *df = dicom::open_dicomfile(l.c_str());
+		dfsorter.add(df, l.c_str());
+		close_dicomfile(df);
+	}
+
+	fin.close();
+
+
+	printf("NUMBER OF STUDIES = %d\n", (int)dfsorter.number_of_studies());
+
+	const char *study_desc, *series_desc, *fn;
+	while (study_desc = dfsorter.get_next_study()) {
+		printf("[%s]\n", study_desc);
+		printf("\t%d series\n", dfsorter.number_of_series_in_curr_study());
+		while (series_desc = dfsorter.get_next_series()) {
+			printf("\t[%s]\n", series_desc);
+			printf("\t\t%d images\n", dfsorter.number_of_images_in_curr_series());
+			while (fn = dfsorter.get_next_instance()) {
+				//printf("\t\t%s\n", fn);
+			}
+		}
+	}
+
+	return 0;
 }
 
+/*
+ *
+ *
+ *
+ */
 //
 //#include <map>
 //#include <list>

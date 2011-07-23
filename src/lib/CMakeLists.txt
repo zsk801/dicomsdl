@@ -27,7 +27,7 @@ SET(C_CXX_SOURCES
 	dicomdict.cxx
 	dicomdir.cxx
 	dicomfile.cxx
-	dicomzip.cxx
+	dicomfile_sorter.cxx
 	errormsg.cxx
 	imagecodec.cxx
 	instream.cxx

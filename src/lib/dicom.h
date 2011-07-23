@@ -469,7 +469,7 @@ struct DLLEXPORT dataset {
 			tagtype tag, vrtype vr=VR_NULL,
 			uint32 len=0, void *ptr=NULL,
 			int endian=MACHINE_ENDIANNESS, int own_memory=false);
-	dataelement* add_dataelement(char *tagstring, vrtype vr=VR_NULL);
+	dataelement* add_dataelement(const char *tagstring, vrtype vr=VR_NULL);
 
 	// del function ------------------------------------------------------
 	void remove_dataelement(tagtype tag);
@@ -897,21 +897,41 @@ DLLEXPORT std::string gen_uid(char* base_uid=NULL);
 DLLEXPORT void set_uid_prefix(char *u=NULL);
 DLLEXPORT int is_valid_uid(char *u);
 
-// functions for sorting dicomfile objects
-DLLEXPORT int compare_dataelement(dataelement *de_a, dataelement *de_b);
-
-/*! Compare two dicomfile object
- * @param list of string, ends with an NULL element
+/*! Pick data elements from a dicomfile object
+ * @param keys list of string, ends with an NULL element
  * 		\verbatim
- * 		char args[] = {"00020002", "00020004", NULL}
+ * 		char *keys[] = {"00020002", "00020004", NULL}
  * 		\endverbatim
- * @return 1 if a>b, 0 if a=b, -1 if a<b
+ * @return a dataset that contains dataelements.
+ * 	returned values should be deleted after used.
  */
-DLLEXPORT int compare_dataset(
-		dataset *ds_a, dataset *ds_b, char **keys);
-
 DLLEXPORT dataset* pick_dataelements(dicomfile *df, char **keys);
-DLLEXPORT void test_func(char **fnlist, char **study_keys, char **ser_keys, char **inst_keys);
+
+class dicomfile_sorter
+{
+	void *m_rec;
+
+public:
+	dicomfile_sorter(const char **study_keys,
+			const char **study_desc_keys,
+			const char **ser_keys,
+			const char **ser_desc_keys,
+			const char **inst_keys);
+	~dicomfile_sorter();
+
+	void add(dicomfile *dfobj, const char *fn);
+
+	void rewind();
+
+	size_t number_of_studies();
+	size_t number_of_series_in_curr_study();
+	size_t number_of_images_in_curr_series();
+
+	const char* get_next_study();
+	const char* get_next_series();
+	const char* get_next_instance();
+
+};
 
 } // namespace dicom -----------------------------------------------------
 

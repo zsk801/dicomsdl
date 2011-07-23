@@ -511,9 +511,9 @@ dataelement* dataset::add_dataelement(tagtype tag, vrtype vr,
 	return e;
 };
 
-dataelement* dataset::add_dataelement(char *tagstr, vrtype vr)
+dataelement* dataset::add_dataelement(const char *tagstr, vrtype vr)
 {
-	char *nextptr, *endptr = tagstr+strlen(tagstr);
+	char *nextptr, *endptr = (char *)(tagstr)+strlen(tagstr);
 
 	tagtype _tag;
 	int _seqidx;
