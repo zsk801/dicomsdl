@@ -905,7 +905,7 @@ DLLEXPORT int is_valid_uid(char *u);
  * @return a dataset that contains dataelements.
  * 	returned values should be deleted after used.
  */
-DLLEXPORT dataset* pick_dataelements(dicomfile *df, char **keys);
+DLLEXPORT dataset* pick_dataelements(dicomfile *df, const char **keys);
 
 class dicomfile_sorter
 {
