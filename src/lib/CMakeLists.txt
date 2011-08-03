@@ -40,6 +40,7 @@ SET(C_CXX_SOURCES
 	zipfile.cxx
 	uidutil.cxx
 	fileutil.cxx
+	dicomxml.cxx
 )
 
 

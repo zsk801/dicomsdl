@@ -51,6 +51,7 @@ rmdir /s/q src\ext\zlib\CMakeFiles
 rmdir /s/q src\lib\CMakeFiles
 rmdir /s/q src\wrapper\CMakeFiles
 rmdir /s/q src\wrapper\python\CMakeFiles
+rmdir /s/q src\ext\expat\CMakeFiles
 rmdir /s/q src\wrapper\python\dicomsdl-0.72
 rmdir /s/q src\doc\html
 rmdir /s/q src\doc\latex

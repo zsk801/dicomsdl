@@ -44,6 +44,8 @@ OPTION(USE_ZLIB
 		"Use zlib to decode/encode deflated explicit LE images." ON)
 OPTION(USE_MINIZIP
 		"Use minizip to read dicomzip file." ON)
+OPTION(USE_EXPAT
+		"Use expat to convert DICOM file into/from xml format." ON)
 
 OPTION(PYTHON_BUILD_EXT
 		"Build Python Extension." OFF)

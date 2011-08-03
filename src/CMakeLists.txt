@@ -27,6 +27,7 @@ check_include_file(dirent.h _HAVE_DIRENT_H)
 include_directories("${PROJECT_SOURCE_DIR}/lib"
 					"${PROJECT_SOURCE_DIR}/ext"
 					"${PROJECT_SOURCE_DIR}/ext/zlib"
+					"${PROJECT_SOURCE_DIR}/ext/expat"
 					)
 	
 # ------------------------------------------------------------------------
@@ -41,9 +42,9 @@ IF(MSVC)
 	# C4996: 'function': was declared deprecated
 
 	SET(CMAKE_CXX_FLAGS
-		"${CMAKE_CXX_FLAGS} /wd4250 /wd4355 /wd4503 /wd4800 /wd4996")
+		"${CMAKE_CXX_FLAGS} /wd4250 /wd4355 /wd4503 /wd4800 /wd4996 -DWIN32 -DXML_STATIC -DHAVE_EXPAT_CONFIG_H")
 	SET(CMAKE_C_FLAGS
-		"${CMAKE_C_FLAGS} -wd4996 -wd4819 -wd4018 -wd4101 -wd4013 -DWIN32")
+		"${CMAKE_C_FLAGS} -wd4996 -wd4819 -wd4018 -wd4101 -wd4013 -DWIN32 -DXML_STATIC -DHAVE_EXPAT_CONFIG_H")
 	 
 	IF (BUILD_SHARED_LIBS)
 		SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /D _BUILD_DLL")
@@ -53,8 +54,8 @@ ELSE(MSVC)
 	include(CheckCXXCompilerFlag)
 	CHECK_CXX_COMPILER_FLAG("-fPIC" HAVE_FPIC_FLAG)
 	IF(HAVE_FPIC_FLAG)
-		SET (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
-		SET (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC")
+		SET (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -DXML_STATIC -DHAVE_EXPAT_CONFIG_H")
+		SET (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC -DXML_STATIC -DHAVE_EXPAT_CONFIG_H")
 	ENDIF(HAVE_FPIC_FLAG)
 	
 ENDIF(MSVC)
@@ -155,6 +156,12 @@ IF (USE_MINIZIP)
 	ADD_SOURCES(ext/minizip)
 	SET (SOURCES ${SOURCES} ${C_CXX_SOURCES})
 ENDIF (USE_MINIZIP)
+
+# expat ----------------------------------------------------------
+IF (USE_EXPAT)
+	ADD_SOURCES(ext/expat)
+	SET (SOURCES ${SOURCES} ${C_CXX_SOURCES})
+ENDIF (USE_EXPAT)
 
 # dicomsdl -------------------------------------------------------
 

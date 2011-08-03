@@ -933,6 +933,8 @@ public:
 
 };
 
+DLLEXPORT void test_func(char *s);
+
 } // namespace dicom -----------------------------------------------------
 
 #endif //  __DICOM_H__
