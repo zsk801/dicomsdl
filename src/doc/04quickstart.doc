@@ -13,7 +13,7 @@ There are several good webpages that introduce on DICOM.
 This short example loads a DICOM formatted file and extract some informations
 and image.
 
-\verbatim
+\code
 
 	#include "dicom.h"
 	#include <string>
@@ -27,14 +27,14 @@ and image.
 			std::string studydesc =
 					df->get_dataelement("StudyDescription")->to_string();
 			// shorter form
-			std::string studytime = df["StudyDate"];
+			std::string studytime = (*df)["StudyDate"];
 			
-			printf("Study Description = %s\n", studydsc.c_str());
+			printf("Study Description = %s\n", studydesc.c_str());
 			printf("Study Time = %s\n", studytime.c_str());
 		
 			// get images' informations in DICOM file
 			 
-			int width, height,
+			int width, height;
 			int precision, signedness, ncomponents, bytes_per_pixel;
 			int nframes;
 			df->get_image_info(&width, &height,
@@ -59,21 +59,21 @@ and image.
 		}
 	}
 
-\endverbatim
+\endcode
 
 Let's see what above codes do line by line.
 
-\verbatim
+\code
 	dicom::dicomfile *df;
-\endverbatim
+\endcode
 
 A <code>dicom::dicomfile</code> is an implementation of DICOM file object.
 
 
 
-\verbatim
+\code
 	df = dicom::open_dicomfile("img001.dcm");
-\endverbatim
+\endcode
 
 <code>dicom::open_dicomfile()</code> reads, parses the file and
 returns a DICOM file object.
@@ -81,13 +81,13 @@ returns a DICOM file object.
 Note) Returned DICOM file object need to be deleted by user.
 
 
-\verbatim
+\code
 	// get some informations dicom file
 	std::string studydesc = 
 				df->get_dataelement("StudyDescription")->to_string();
 	// shorter form
 	std::string studytime = df["StudyDate"];
-\endverbatim
+\endcode
 
 A DICOM file consists of several items contain informations about the DICOM file.
 Each item in a DICOM file called 'data element' and you get a data element using
@@ -96,14 +96,14 @@ like <code>to_string</code>, <code>to_int</code>,
 <code>to_double_values</code>, according to the data type of item.
 You may shorten code in second form.
 
-\verbatim
+\code
 	// get informations of image in dicom file
 	get_image_info(&width, &height,
 		&precision, &signedness, &ncomponents, &bytes_per_pixel,
 		&nframes);	
 	// get pixeldata
 	df->get_pixeldata_a(&pixeldata, &pixeldata_length);
-\endverbatim
+\endcode
 
 DICOM file object provide functions to extract image in the DICOM file.
 <code>get_image_info</code> takes informations related to image's geometry,
@@ -115,9 +115,9 @@ that function return a pointer that should be <code>free()</code> by user,
 provided that the pointer is valid.
 
 
-\verbatim
+\code
 	printf("Error message: %s\n", dicom::get_error_message());
-\endverbatim
+\endcode
 
 If an error is occured during reading/parsing a DICOM file,
 <code>dicom::open_dicomfile()</code> return NULL and you may
@@ -131,7 +131,7 @@ After calling several functions that return NULL on error,
 This is a python program does exact same thing.
 
 
-\verbatim
+\code
 	import dicom
 	
 	df = dicom.open_dicomfile('img001.dcm')
@@ -141,7 +141,7 @@ This is a python program does exact same thing.
 		# shorter form
 		studytime = df["StudyDate"]
 		
-		print "Study Description =", studydsc
+		print "Study Description =", studydesc
 		print "Study Time =", studytime
 	
 		# get informations of image in dicom file
@@ -159,6 +159,6 @@ This is a python program does exact same thing.
 			pass # do something ...		
 	else:
 		print "Error message:", dicom.get_error_message()
-\endverbatim	
+\endcode	
 
 */
