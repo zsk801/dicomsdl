@@ -1,0 +1,437 @@
+/** \page coderecipes Code Recipes
+
+\section opening_dicomfile Opening a DICOM file object
+
+Used functions
+
+- \c dicom::open_dicomfile()
+- \c dicom::open_dicomfile_from_memory()
+
+\subsection opening_dicomfile_fromfile Opening a DICOM file object from a file
+
+\code
+dicom::dicomfile *df;
+
+df = dicom::open_dicomfile("img001.dcm");
+if (!df) {
+	printf("%s\n", dicom::get_error_message());
+    goto __dicom_open_error__; // process error
+}
+
+// do something with dicomfile object
+
+dicom::close_dicomfile(df);
+\endcode
+
+\code
+import dicom
+   
+df = dicom.open_dicomfile('img001.dcm')
+if df:
+	pass # Do something with dicomfile object
+else:
+	print dicom.get_error_message()
+
+# You don't need to close_dicomfile().
+# If you want to remove object explicitly, use 'del'.
+\endcode
+
+\subsection opening_dicomfile_from_memory Opening a DICOM file object from memory buffer
+
+\code
+FILE *fp;
+dicom::dicomfile *df;
+char *membuf;
+long membufsiz;
+   
+fp = fopen("img001.dcm", "rb");
+if (!fp) goto __file_error__; // process error
+   
+fseek(fp, 0, SEEK_END);
+membufsiz = ftell(fp);
+fseek(fp, 0, SEEK_SET);
+   
+membuf = (char *)malloc(membufsiz);
+if (!membuf) goto __memory_error__; // process error 
+   
+fread(membuf, 1, membufsiz, fp);
+fclose(fp);
+
+df = dicom::open_dicomfile_from_memory(membuf, membufsiz);
+free(membuf);
+if (!df) goto __dicom_open_error__; // process error
+   
+// do something with dicomfile object
+   
+dicom::close_dicomfile(df);
+\endcode
+
+\code
+import dicom
+   
+fileimage = file('img001.dcm', 'rb').read()
+df = dicom.open_dicomfile_from_memory(fileimage)
+\endcode
+
+\section get_values Get a data element and its value
+
+Used functions
+
+- \c dicom::dicomfile::get_dataelement()
+- \c dicom::dataset::operator[]
+- \c dicom::dataset::get_dataelement()
+- \c dicom::dataset::operator[]
+- \c dicom::dataelement::is_valid()
+- <code> dicom::dataelement::operator bool() </code>
+
+You have to get \c dicom::dataelement objects before accessing
+values in a dicom file. A \c dicom::dicomelement object can be obtained
+using function \c dicom::dataset::get_dataelement or
+\c dicom::dicomfile::get_dataelement. 
+
+\code
+dicom::dicomfile *df;
+dicom::dataelement *de;
+std::string value;
+   
+// ... open dicomfile
+   
+// Get a data element that holds study date (0008,0020).
+de = df->get_dataelement(0x00080020);
+   
+// check existence of the data element.
+if (de->is_valid()) { 
+	// retrieve value
+	value = de->to_string();
+} else {
+	// set value for 'non-exist' data element.
+	value = std::string("N/A");
+}
+\endcode
+
+You may shorten <em>get dataelement->check existence->get value</em>
+process into one line.
+
+\code
+// to_string() will return "N/A" string if get_dataelement() returns
+//   'invalid' or 'non-exist' dataelement.    
+value = df->get_dataelement(0x00080020)->to_string("N/A"); 
+\endcode
+
+\c dicom::dicomfile::get_dataelement takes 'tag value' in several forms.
+If gggg,eeee mean group and element number of tag in hex form, following forms
+are acceptable.
+
+   - \c 0xggggeeee
+   - \c "0xggggeeee"
+   - \c "ggggeeee"
+   - \c "ggggeeee.n.ggggeeee"
+   - \c "KeyWord"
+
+For example, following forms indicate a data element contains <em>study description</em>
+
+   - \c 0x00081030
+   - \c "0x00081030"
+   - \c "00081030"
+   - \c "StudyDescription"
+
+KeyWords are defined in ftp://medical.nema.org/medical/dicom/2009/09_06pu3.pdf 
+
+\subsection get_values_in_sequence Get a data element in a nested dataset
+
+If you need to access a data element in a nested dataset, you can
+use \c "ggggeeee.n.ggggeeee" form.
+     
+\code
+dicomfile *df = open_dicomfile("somefile.dcm");
+   
+dataset *ds;
+dataelement *de;
+double radionuclide_dose;
+   
+// get 0th dataset in the dataset sequence at (0054,0016)
+// (0054,0016) = Radiopharmaceutical Information Sequence
+ds = df->get_dataelement(0x00540016)->dataset_at(0);
+
+if (ds != NULL) {
+	// (0018,1074) = RadionuclideTotalDose
+	de = ds->get_dataelement(0x00181074);
+	radionuclide_dose = de->to_double(0.0);
+} else {
+	radionuclide_dose = 0.0;
+}
+\endcode
+
+Above codes can be shortened using \c "ggggeeee.n.ggggeeee" form.
+
+\code
+radionuclide_dose = df->get_dataelement("00540016.0.00181074")->to_double(0.0);
+\endcode
+
+\subsection func_getvalues Functions to get values
+
+A \c dicom::dataelement objects has several functions name like
+\c to_<i>variabletype()</i>.
+
+Used functions
+
+- \c dicom::dataelement::to_int()
+- <code> dicom::dataelement::operator int() </code>
+
+- \c dicom::dataelement::to_int_values_a()
+- \c dicom::dataelement::to_int_values()
+- <code> dicom::dataelement::operator std::vector<int>() </code>
+
+- \c dicom::dataelement::to_double()
+- <code> dicom::dataelement::operator double() </code>
+
+- \c dicom::dataelement::to_double_values_a()
+- \c dicom::dataelement::to_double_values()
+- <code> dicom::dataelement::operator std::vector<double>() </code>
+ 
+- \c dicom::dataelement::to_string()
+- \c dicom::dataelement::to_string_a()
+
+- \c dicom::dataelement::raw_value() 
+
+\code
+dicomfile *df;
+
+/*** get a value in 'int' form ***/
+
+int number_of_slices;
+number_of_slices = df->get_dataelement(0x00540081)->to_int(0);
+// another equivalent form
+number_of_slices = (*df)[0x00540081].to_int(0);
+// yet another equivalent form
+number_of_slices = (*df)[0x00540081];
+
+
+/*** get a value in 'real' form ***/
+
+double slice_thickeness
+slice_thickenss = df->get_dataelement(0x00180050)->to_double(0.0);
+slice_thickness = (*df)[0x00180050].to_double(0.0)
+slice_thickness = (*df)[0x00180050];
+
+
+/*** get multiple 'int' values in a dataelement ***/
+
+int *matrix_values;
+int n;
+(*df)["AcquisitionMatrix"].to_int_values_a(&matrix_values, &n);
+if (matrix_values != NULL) {
+	printf("Acquisition Matrix");
+	for (int i = 0; i < n; i++)
+		printf(" %d", matrix_values[i]);
+	free(matrix_values); // user SHOULD free() memories for array!
+}
+
+// much simpler codes using std::vector
+std::vector<int> matrix_values;
+matrix_values =(*df)["AcquisitionMatrix"].to_int_values();
+// or
+matrix_values =(*df)["AcquisitionMatrix"];
+
+
+/*** get multiple 'double' values ***/   
+
+double *image_position;
+int n;
+(*df)["ImagePositionPatient"].to_double_values_a(&image_position, &n);
+if (image_position != NULL) {
+	printf("Image Patient Position");
+	for (int i = 0; i < n; i++)
+		printf(" %lf", image_position[i]);
+	free(image_position); // user SHOULD free() memories for array!
+}
+
+// much simpler codes using std::vector
+std::vector<double> image_position;
+image_position =(*df)["ImagePositionPatient"].to_double_values();
+// or
+image_position =(*df)["ImagePositionPatient"];
+
+
+/*** get string values ***/
+
+char *patient_name;
+(*df)["PatientName"].to_string_a(&patient_name);
+if (patient_name) {
+	printf("Patient name = %s\n", patient_name);
+	free(patient_name); // user SHOULD free() memories for array!
+} else {
+	printf("Patient name is not available\n");
+}
+
+// much simpler codes using std::string
+std::string patient_name;
+patient_name = (*df)["PatientName"].to_string("N/A");
+// or
+patient_name = (*df)["PatientName"];
+
+
+/*** get a value in binary form ***/
+
+char *pixeldata;
+int pixeldata_len;
+df->get_dataelement(0x7fe00010)->raw_value(&pixeldata, &pixeldata_len);
+if (pixeldata) {
+	// do something with pixel data
+	// DO NOT free() pixeldata
+}
+   
+\endcode
+
+\subsection get_values_py Get values with Python
+
+\code
+df = open_dicomfile("img001")
+
+# get a value in 'int' form
+
+number_of_slices = df.get_dataelement(0x00540081).to_int(0)
+
+# equivalent forms to get 'int' values
+number_of_slices = df.get_dataelement(0x00540081).get_value()
+number_of_slices = df[0x00540081]
+
+# get a value in 'real' form
+
+slice_thickenss = df.get_dataelement(0x00180050).to_double(0.0)
+slice_thickenss = df.get_dataelement(0x00180050).get_value()
+slice_thickness = df[0x00180050]
+   
+# get multiple 'int' values in a dataelement
+
+acq_mat = df.get_dataelement("AcquisitionMatrix").to_int_values()
+acq_mat = df.get_dataelement("AcquisitionMatrix").get_value()
+acq_mat = df["AcquisitionMatrix"]
+
+# get multiple 'double' values
+
+img_pos = df.get_dataelement("ImagePositionPatient").to_double_values()
+img_pos = df.get_dataelement("ImagePositionPatient").get_value()
+img_pos = df["ImagePositionPatient"]
+
+# get string values
+
+pat_name = df.get_dataelement("PatientName").to_string()
+pat_name = df.get_dataelement("PatientName").to_string("N/A")
+pat_name = df["PatientName"]
+
+# get a value in binary form
+
+raw_pixeldata = df.get_dataelement(0x7fe00010).raw_value()
+
+\endcode
+
+
+
+\section set_values Setting Values
+
+\section write_to_file Write to a file
+
+\section get_image Getting pixel data
+
+\subsection get_image_cpp Getting pixel data with C++
+
+Used functions
+
+- \c dicom::dicomfile::get_image_info()
+- \c dicom::dicomfile::copy_pixeldata_to()
+- \c dicom::dicomfile::get_pixeldata_a()
+
+\code
+dicomfile *df;
+
+int width, height;
+int precision, signedness;
+int ncomponents, bytes_per_pixel;
+int nframes;
+
+char* pixel_buffer;
+int buffer_length; 
+int row_step, frame_step;
+
+df = dicom::open_dicomfile("img001");
+
+if (df) {
+	df->get_image_info(&width, &height,
+		&precision, &signedness,
+		&ncomponents, &bytes_per_pixel, &nframes);
+	
+	if (width) {
+		buffer_length = width*bytes_per_pixel*height*nframes;
+		pixel_buffer = new char[buffer_length];
+		
+		row_step = width*bytes_per_pixel;
+		frame_step = width*bytes_per_pixel*height;
+		copy_pixeldata_to(&pixel_buffer, row_step, frame_step);
+		
+		/* do something with pixel data */
+		
+		delete pixel_buffer;
+	}
+	else {
+		printf("Problem in get pixel data from a dicom file.\n");
+	}
+	
+	dicom::close_dicomfile(df);
+}
+else {
+	printf("Error in opening file: %s\n", dicom::get_error_message());
+}
+\endcode
+
+\subsection get_image_py Getting pixel data with Python
+
+\code
+
+import numpy
+
+def extract_pixeldata(filename):
+	df = dicom.open_dicomfile(filename)
+	if not df:
+		return None
+
+	width, height, prec, sgnd, ncomps, bpp, nframes = df.get_image_info()
+	pixeldata = df.get_pixeldata()
+	if not pixeldata:
+		return None
+	if width*height*prec == 0:
+		return None
+		
+	shape = [height, width]
+	if ncomps > 1:
+		shape += [ncomps]
+	if nframes > 1:
+		shape = [nframes] + shape
+	
+	if prec > 8:
+		dtype = numpy.int16 if sgnd else numpy.uint16
+	elif prec > 0:
+		dtype = numpy.int8 if sgnd else numpy.uint8	
+	else:
+		return None
+		
+	ar = numpy.fromstring(pixeldata, dtype=dtype)
+	ar.shape = shape
+	return ar
+	
+def extract_pixeldata_much_simpler_version(filename):
+	df = dicom.open_dicomfile(file)
+	if df:
+		return df.to_numpy_array(self)
+	else:
+		return None
+\endcode
+
+\section set_image Setting pixel data
+
+Used functions
+
+- \c dicom::dicomfile::set_pixeldata()
+
+
+*/

@@ -1,0 +1,164 @@
+/** \page quickstart Quick Start
+
+\section brief_overview A Brief Overview on DICOM
+
+If you are not familiar with DICOM, read this before you go on.
+There are several good webpages that introduce on DICOM.
+
+((( TBD )))
+
+
+\section cpp_example C++ example 
+
+This short example loads a DICOM formatted file and extract some informations
+and image.
+
+\verbatim
+
+	#include "dicom.h"
+	#include <string>
+	
+	int main()
+	{
+		dicom::dicomfile *df;
+		df = dicom::open_dicomfile("img001.dcm");
+		if (df) {
+			// get some informations dicom file
+			std::string studydesc =
+					df->get_dataelement("StudyDescription")->to_string();
+			// shorter form
+			std::string studytime = df["StudyDate"];
+			
+			printf("Study Description = %s\n", studydsc.c_str());
+			printf("Study Time = %s\n", studytime.c_str());
+		
+			// get images' informations in DICOM file
+			 
+			int width, height,
+			int precision, signedness, ncomponents, bytes_per_pixel;
+			int nframes;
+			df->get_image_info(&width, &height,
+				&precision, &signedness, &ncomponents, &bytes_per_pixel,
+				&nframes);
+				
+			// get pixeldata
+				
+			char *pixeldata;
+			int pixeldata_length;
+			df->get_pixeldata_a(&pixeldata, &pixeldata_length);
+			
+			if (pixeldata) {
+				// do something ...
+				
+				free(pixeldata);
+			}
+	
+			delete df;	
+		} else {
+			printf("Error message: %s\n", dicom::get_error_message());
+		}
+	}
+
+\endverbatim
+
+Let's see what above codes do line by line.
+
+\verbatim
+	dicom::dicomfile *df;
+\endverbatim
+
+A <code>dicom::dicomfile</code> is an implementation of DICOM file object.
+
+
+
+\verbatim
+	df = dicom::open_dicomfile("img001.dcm");
+\endverbatim
+
+<code>dicom::open_dicomfile()</code> reads, parses the file and
+returns a DICOM file object.
+
+Note) Returned DICOM file object need to be deleted by user.
+
+
+\verbatim
+	// get some informations dicom file
+	std::string studydesc = 
+				df->get_dataelement("StudyDescription")->to_string();
+	// shorter form
+	std::string studytime = df["StudyDate"];
+\endverbatim
+
+A DICOM file consists of several items contain informations about the DICOM file.
+Each item in a DICOM file called 'data element' and you get a data element using
+<code>get_dataelement</code>. Item's value can be retrieved with functions
+like <code>to_string</code>, <code>to_int</code>,
+<code>to_double_values</code>, according to the data type of item.
+You may shorten code in second form.
+
+\verbatim
+	// get informations of image in dicom file
+	get_image_info(&width, &height,
+		&precision, &signedness, &ncomponents, &bytes_per_pixel,
+		&nframes);	
+	// get pixeldata
+	df->get_pixeldata_a(&pixeldata, &pixeldata_length);
+\endverbatim
+
+DICOM file object provide functions to extract image in the DICOM file.
+<code>get_image_info</code> takes informations related to image's geometry,
+and <code>get_pixeldata_a</code> extract image.
+
+Note)
+The suffix '_a' in the function name <code>get_pixeldata_a</code> means
+that function return a pointer that should be <code>free()</code> by user,
+provided that the pointer is valid.
+
+
+\verbatim
+	printf("Error message: %s\n", dicom::get_error_message());
+\endverbatim
+
+If an error is occured during reading/parsing a DICOM file,
+<code>dicom::open_dicomfile()</code> return NULL and you may
+get the error message using <code>dicom::get_error_message()</code>.  
+After calling several functions that return NULL on error,
+<code>dicom::get_error_message()</code> provide informations about the error.
+
+
+\section python_example Python example 
+
+This is a python program does exact same thing.
+
+
+\verbatim
+	import dicom
+	
+	df = dicom.open_dicomfile('img001.dcm')
+	if df:
+		# get some informations dicom file
+		studydesc = df.get_dataelement('StudyDescription').to_string()
+		# shorter form
+		studytime = df["StudyDate"]
+		
+		print "Study Description =", studydsc
+		print "Study Time =", studytime
+	
+		# get informations of image in dicom file
+		
+		ret = df.get_image_info()
+		if ret:
+			(width, height,
+			 precision, signedness, ncomponents, bytes_per_pixel,
+			 nframes) = ret
+			
+		# get pixeldata
+		pixeldata = df.get_pixeldata()
+		
+		if pixeldata:
+			pass # do something ...		
+	else:
+		print "Error message:", dicom.get_error_message()
+\endverbatim	
+
+*/

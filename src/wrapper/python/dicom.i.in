@@ -1,0 +1,684 @@
+%module dicom
+
+// DICOMSDL_VER @dicomsdl_version@
+
+%include "@INCLUDE_TYPEMAP@"
+%include "typemaps.i"
+%include "std_string.i"
+
+%{
+#include "dicomcfg.h"
+#include "dicom.h"
+#include "utilfunc.h"
+%}
+
+
+// error handling --------------------------------------------------------
+
+%typemap(throws) char * %{
+  PyErr_SetString(PyExc_RuntimeError, $1);
+  SWIG_fail;
+%}
+
+%catches(char *) nccsd::dicomfile::dicomfile;
+
+
+// open & close dicomfile ------------------------------------------------
+
+%newobject dicom::open_dicomfile;
+%newobject dicom::open_dicomfile_from_memory;
+// use del (object) rather than close_dicomfile(object)
+%ignore dicom::close_dicomfile;
+
+%newobject dicom::pick_dataelements; 
+
+%newobject dicom::open_dicomdir;
+%newobject dicom::open_dicomdir_from_memory;
+// use del (object) rather than close_dicomdir(object)
+%ignore dicom::close_dicomdir; 
+
+
+// (char *data, int datasize) - for input --------------------------------
+
+%typemap(in, numinputs=1) (char *data, int datasize) {
+    if (!PyString_Check($input))
+        { PyErr_SetString(PyExc_TypeError, "need string"); return NULL; }
+    Py_ssize_t _len;
+    PyString_AsStringAndSize($input, &$1, &_len);
+    $2 = _len;
+} 
+
+%typemap(in, numinputs=1) (const char *data, int datasize) {
+    if (!PyString_Check($input))
+        { PyErr_SetString(PyExc_TypeError, "need string"); return NULL; }
+    Py_ssize_t _len;
+    PyString_AsStringAndSize($input, &$1, &_len);
+    $2 = _len;
+} 
+
+
+// (char **val_a, int *len_a, int *isalloc) ------------------------------
+
+%typemap(in, numinputs=0) (char **val_a, int *len_a, int *isalloc) (char *_val_a, int _len_a, int _isalloc)
+{
+	$1 = &_val_a;	$2 = &_len_a; $3 = &_isalloc;
+}
+%typemap(argout,fragment="t_output_helper") (char **val_a, int *len_a, int *isalloc)
+{
+	PyObject *o;
+    if (*$1) {
+    	o = PyString_FromStringAndSize((const char *)*$1, *$2);
+        if (*$3)
+        	free (*$1);
+    } else {
+        Py_INCREF(Py_None);
+        o = Py_None;
+    }
+	$result = t_output_helper($result,o);    
+}
+
+
+// (char **val_a, int *len_a) - returned val_a should be 'free'ed. -------
+
+%typemap(in, numinputs=0) (char **val_a, int *len_a) (char *_val_a, int _len_a)
+{
+	$1 = &_val_a;	$2 = &_len_a;
+}
+
+%typemap(argout,fragment="t_output_helper") (char **val_a, int *len_a)
+{
+	PyObject *o;
+    if (*$1) {
+    	o = PyString_FromStringAndSize((const char *)*$1, *$2);
+    	free (*$1);
+    } else {
+        Py_INCREF(Py_None);
+        o = Py_None;
+    }
+	$result = t_output_helper($result,o);    
+}
+
+
+// (char **val, int *len) - returned val should not be 'free'ed. --------- 
+
+%typemap(in, numinputs=0) (char **val, int *len) (char *_val, int _len)
+{
+	$1 = &_val;	$2 = &_len;
+}
+%typemap(argout,fragment="t_output_helper") (char **val, int *len)
+{
+	PyObject *o;
+    if (*$1) {
+    	o = PyString_FromStringAndSize((const char *)*$1, *$2);
+    } else {
+        Py_INCREF(Py_None);
+        o = Py_None;
+    }
+	$result = t_output_helper($result,o);    
+}
+
+
+// typemap for to_int_values_a, to_double_values_a -----------------------
+ 
+%typemap(in, numinputs=0) (int **values, int *nvalues) (int *_values, int _nvalues) {
+	$1 = &_values;
+	$2 = &_nvalues;
+}
+
+%typemap(argout) (int **values, int *nvalues) {
+	if (*$1) {
+		$result = PyList_New(*$2);
+		for (int i = 0; i < *$2; i++) {
+			PyObject *o = PyInt_FromLong((long) (*$1)[i]);
+			PyList_SetItem($result,i,o);		
+		}
+		free (*$1);
+	} else {
+		Py_INCREF(Py_None);
+		$result = Py_None;
+	}
+}
+
+
+%typemap(in, numinputs=0) (double **values, int *nvalues) (double *_values, int _nvalues) {
+	$1 = &_values;
+	$2 = &_nvalues;
+}
+
+%typemap(argout) (double **values, int *nvalues) {
+	if (*$1) {
+		$result = PyList_New(*$2);
+		for (int i = 0; i < *$2; i++) {
+			PyObject *o = PyFloat_FromDouble((double) (*$1)[i]);
+			PyList_SetItem($result,i,o);		
+		}
+		free (*$1);
+	} else {
+		Py_INCREF(Py_None);
+		$result = Py_None;
+	}
+}
+
+
+// typemap for from_int_values, from_double_values -----------------------
+
+%typemap(in) (int *values, int nvalues) {
+    $1 = NULL;
+    int errflag = 0;
+	if (PyList_Check($input)) {
+	    $2 = PyList_Size($input);
+	    if ($2) {
+	        $1 = new int[$2];
+	        for (Py_ssize_t i = 0; i < $2; i++) {
+	            $1[i] = PyInt_AsLong(PyList_GET_ITEM($input,i));
+	            if ($1[i] == -1 && PyErr_Occurred()) {
+			        errflag = 1;
+	            	break;
+	            }
+	        }
+	    }
+	} else if (PyTuple_Check($input)) {
+	    $2 = PyTuple_Size($input);
+	    if ($2) {
+	        $1 = new int[$2];
+	        for (Py_ssize_t i = 0; i < $2; i++) {
+	            $1[i] = PyInt_AsLong(PyTuple_GET_ITEM($input,i));
+	            if ($1[i] == -1 && PyErr_Occurred()) {
+			        errflag = 1;
+	            	break;
+	            }
+	        }
+	    }
+    }
+    
+    if (errflag) {
+    	if ($1) { delete [] $1; $1 = NULL; }
+        PyErr_SetString(PyExc_TypeError, "need list of "
+        							  "multiple 'int' values");
+        return NULL;
+    }
+}
+
+%typemap(freearg) (int *values, int nvalues) {
+    if ($1) delete [] $1;
+}
+        
+        
+%typemap(in) (double *values, int nvalues) {
+    $1 = NULL;
+    int errflag = 0;  
+	if (PyList_Check($input)) {
+	    $2 = PyList_Size($input);
+	    if ($2) {
+	        $1 = new double[$2];
+	        for (Py_ssize_t i = 0; i < $2; i++) {
+	            $1[i] = PyFloat_AsDouble(PyList_GET_ITEM($input,i));
+	            if ($1[i] == -1 && PyErr_Occurred()) {
+			        errflag = 1;
+	            	break;
+	            }
+	        }
+	    }
+	} else if (PyTuple_Check($input)) {
+	    $2 = PyTuple_Size($input);
+	    if ($2) {
+	        $1 = new double[$2];
+	        for (Py_ssize_t i = 0; i < $2; i++) {
+	            $1[i] = PyFloat_AsDouble(PyTuple_GET_ITEM($input,i));
+	            if ($1[i] == -1 && PyErr_Occurred()) {
+			        errflag = 1;
+	            	break;
+	            }
+	        }
+	    }
+    }
+    
+    if (errflag) {
+    	if ($1) { delete [] $1; $1 = NULL; }
+        PyErr_SetString(PyExc_TypeError, "need list of "
+        								 "multiple 'float' values");
+        return NULL;
+    }
+}
+
+
+%typemap(freearg) (double *values, int nvalues) {
+    if ($1) delete [] $1;
+}
+
+
+%typemap(in) (dicom::uidtype *uids, int nuids) {
+    $1 = NULL;
+    int errflag = 0;
+	if (PyList_Check($input)) {
+	    $2 = PyList_Size($input);
+	    if ($2) {
+	        $1 = new dicom::uidtype[$2];
+	        for (Py_ssize_t i = 0; i < $2; i++) {
+	            $1[i] = (dicom::uidtype)PyInt_AsLong(PyList_GET_ITEM($input,i));
+	            if ($1[i] == -1 && PyErr_Occurred()) {
+			        errflag = 1;
+	            	break;
+	            }
+	        }
+	    }
+	} else if (PyTuple_Check($input)) {
+	    $2 = PyTuple_Size($input);
+	    if ($2) {
+	        $1 = new dicom::uidtype[$2];
+	        for (Py_ssize_t i = 0; i < $2; i++) {
+	            $1[i] = (dicom::uidtype)PyInt_AsLong(PyTuple_GET_ITEM($input,i));
+	            if ($1[i] == -1 && PyErr_Occurred()) {
+			        errflag = 1;
+	            	break;
+	            }
+	        }
+	    }
+    }
+    
+    if (errflag) {
+    	if ($1) { delete [] $1; $1 = NULL; }
+        PyErr_SetString(PyExc_TypeError, "need list of "
+        								 "multiple 'uidtype' values");
+        return NULL;
+    }
+}
+
+%typemap(freearg) (dicom::uidtype *uids, int nuids) {
+    if ($1) delete [] $1;
+}
+
+
+// typemap for from_string_values ----------------------------------------
+
+%typemap(in) (char **values, int nvalues) {
+    $1 = NULL;
+    int errflag = 0;
+	if (PyList_Check($input)) {
+	    $2 = PyList_Size($input);
+	    if ($2) {
+	        $1 = (char **)malloc(sizeof(char *)*$2);
+	        for (Py_ssize_t i = 0; i < $2; i++) {
+	            $1[i] = PyString_AsString(PyList_GET_ITEM($input,i));
+	            if ($1[i] == NULL) {
+			        errflag = 1;
+	            	break;
+	            }
+	        }
+	    }
+	} else if (PyTuple_Check($input)) {
+	    $2 = PyTuple_Size($input);
+	    if ($2) {
+	        $1 = (char **)malloc(sizeof(char *)*$2);
+	        for (Py_ssize_t i = 0; i < $2; i++) {
+	            $1[i] = PyString_AsString(PyList_GET_ITEM($input,i));
+	            if ($1[i] == NULL) {
+			        errflag = 1;
+	            	break;
+	            }
+	        }
+	    }
+    }
+    
+    if (errflag) {
+    	if ($1) { free($1); $1 = NULL; }
+        PyErr_SetString(PyExc_TypeError, "need list of "
+        								 "multiple 'string' values");
+        return NULL;
+    }
+}
+
+%typemap(freearg) (int *values, int nvalues) {
+    if ($1) free($1);
+}
+
+// typemap for an array of NULL-terminated staging
+
+
+// This tells SWIG to treat char ** as a special case
+%typemap(in) (char **ARGV) {
+	if (PyList_Check($input)) {
+		int size = PyList_Size($input);
+		int i = 0;
+		$1 = (char **) malloc((size+1)*sizeof(char *));
+		for (i = 0; i < size; i++) {
+			PyObject *o = PyList_GetItem($input,i);
+			if (PyString_Check(o))
+				$1[i] = PyString_AsString(PyList_GetItem($input,i));
+			else {
+				PyErr_SetString(PyExc_TypeError,"need list of "
+        								  "multiple 'string' values");
+				free($1);
+				return NULL;
+			}
+		}
+		$1[i] = 0;
+ 	} else {
+		PyErr_SetString(PyExc_TypeError,"need list of "
+        								"multiple 'string' values");
+		return NULL;
+	}
+}
+
+%typemap(freearg) (char **ARGV) {
+	free((char *) $1);
+}
+
+%apply char **ARGV { char **study_keys };
+%apply char **ARGV { char **study_desc_keys };
+%apply char **ARGV { char **ser_keys };
+%apply char **ARGV { char **ser_desc_keys };
+%apply char **ARGV { char **inst_keys };
+
+// typemaps for output ---------------------------------------------------
+
+%include "typemaps.i" 
+%typemap(in,numinputs=0) int *return_value(int tmp) "$1 = &tmp;"; 
+%typemap(argout,fragment="t_output_helper") int *return_value { 
+   PyObject *o = PyInt_FromLong(*$1); 
+   $result = t_output_helper($result,o); 
+} 
+
+%apply int *return_value { int *width };
+%apply int *return_value { int *height };
+%apply int *return_value { int *precision };
+%apply int *return_value { int *signedness };
+%apply int *return_value { int *ncomponents };
+%apply int *return_value { int *bytes_per_pixel };
+%apply int *return_value { int *nframes };
+
+%apply int *return_value { int *pres_context_id };
+%apply int *return_value { int *mch };
+
+
+// renaming --------------------------------------------------------------
+
+%rename(__getitem__) dicom::dicomfile::operator[];
+%rename(__getitem__) dicom::dataset::operator[];
+%rename(__getitem__) dicom::sequence::operator[];
+%rename(__int__) dicom::dataelement::operator int;
+%rename(__nonzero__) dicom::dataelement::operator bool;
+%rename(__float__) dicom::dataelement::operator double;
+%rename(__str__) dicom::dataelement::operator std::string;
+
+%ignore dicom::dataelement::set_value(char *);
+%ignore dicom::dataelement::set_value(char *,int);
+%ignore dicom::dataelement::set_value(const char *);
+%ignore dicom::dataelement::set_value(const char *,int);
+
+%ignore dicom::dataelement::to_int_values;
+%rename(to_int_values) dicom::dataelement::to_int_values_a;
+
+%ignore dicom::dataelement::to_double_values;
+%rename(to_double_values) dicom::dataelement::to_double_values_a;
+
+%ignore dicom::dataelement::to_string;
+//%rename(to_string) dicom::dataelement::to_string_a;
+//... see __dicom_dataelement_to_string
+
+%ignore dicom::dataelement::repr_string;
+%rename(repr_string) dicom::dataelement::repr_string_a;
+
+%ignore dicom::dicomfile::dump_string;
+%rename(dump_string) dicom::dicomfile::dump_string_a;
+
+%ignore dicom::dataset::dump_string;
+%rename(dump_string) dicom::dataset::dump_string_a;
+
+%ignore dicom::dataset::save_a;
+%rename(save_to_memory) dicom::dataset::save_a;
+
+%ignore dicom::dicomfile::save_to_memory;
+%rename(save_to_memory) dicom::dicomfile::save_to_memory_a;
+
+%ignore dicom::zipfile_extract_file_a;
+%rename(zipfile_extract_file) dicom::zipfile_extract_file_a;
+
+%rename(get_pixeldata) dicom::dataset::get_pixeldata_a;
+%rename(get_pixeldata) dicom::dicomfile::get_pixeldata_a;
+
+%ignore dicom::dataelement::operator=(int value);
+%ignore dicom::dataelement::operator=(std::vector <int> & v);
+%ignore dicom::dataelement::operator=(double v);
+%ignore dicom::dataelement::operator=(std::vector <double> & v);
+%ignore dicom::dataelement::operator=(char * v);
+%ignore dicom::dataelement::operator=(const char * v);
+%ignore dicom::dataelement::operator=(std::string &s);
+%ignore dicom::dataelement::operator std::vector<int>;
+%ignore dicom::dataelement::operator std::vector<double>;
+%ignore dicom::dataelement::operator dataset*;
+%ignore dicom::dataelement::operator uidtype;
+%ignore dicom::dataelement::operator sequence*;
+
+// use load_from_data(fileimagestring, True or False) instead
+%ignore dicom::dicomfile::dicomfile(char *,int);
+%ignore dicom::dicomfile::dicomfile(const char *,int);
+%ignore dicom::dicomdir::dicomdir(char *,int);
+%ignore dicom::dicomdir::dicomdir(const char *,int);
+
+
+//------------------------------------------------------------------------
+
+%include "dicomcfg.h"
+%include "dicom.h"
+
+
+// make functions that enables multithread -------------------------------
+
+%inline %{
+dicom::dicomfile* open_dicomfile_thread
+			(const char *filename,
+			 dicom::opttype opt=dicom::default_load_opt,
+			 dicom::optarg arg=0)
+{
+	dicom::dicomfile* dfobj;
+	
+	Py_BEGIN_ALLOW_THREADS
+	dfobj = dicom::open_dicomfile(filename, opt, arg);
+	Py_END_ALLOW_THREADS
+	
+	return dfobj;
+}
+%}
+
+%inline %{
+int copy_pixeldata_thread(
+	dicom::dicomfile* dfobj,
+	void *buf, int rowstep, int framestep, int idx=-1)
+{
+	int ret;
+	
+	Py_BEGIN_ALLOW_THREADS
+	ret = dfobj->copy_pixeldata_to((char *)buf, rowstep, framestep, idx);
+	Py_END_ALLOW_THREADS
+	
+	return ret;
+}		 
+
+%}
+
+// wrappers written in python codes --------------------------------------
+
+%pythoncode %{
+
+# get_value / set_value wrappers -----------------------------------------
+ 
+def __dicom_dataelement_get_value(self, defaultvalue=None):
+	if not self.is_valid() and defaultvalue:
+		return defaultvalue
+		
+	if self.vr in [VR_SL, VR_SS, VR_UL, VR_US, VR_AT, VR_IS]:
+		if self.get_vm() == 1:
+			return self.to_int()
+		else:
+			return self.to_int_values()
+	elif self.vr in [VR_FL, VR_FD, VR_DS]:
+		if self.get_vm() == 1:
+			return self.to_double()
+		else:
+			return self.to_double_values()
+	elif self.vr in [VR_AE, VR_AS, VR_CS, VR_DA,
+		VR_DT, VR_LO, VR_LT, VR_PN, VR_SH,
+		VR_ST, VR_UK, VR_TM, VR_UI]:
+		return self.to_string()
+	elif self.vr == VR_SQ:
+		return [self.dataset_at(i)
+		        for i in range(self.number_of_datasets())]
+		#return self.to_sequence()
+	elif self.vr == VR_OFFSET:
+		return self.to_dataset()
+	else:
+		return self.raw_value()
+		
+dataelement.get_value = __dicom_dataelement_get_value
+
+def __dicom_dataelement_set_value(self, value):
+	if self.vr in [VR_SL, VR_SS, VR_UL, VR_US, VR_AT, VR_IS]:
+		if isinstance(value, (list, tuple)): # multiple vm
+			self.from_int_values(value)
+		else:
+			self.from_int(int(value))
+	elif self.vr in [VR_FL, VR_FD, VR_DS]:
+		if isinstance(value, (list, tuple)): # multiple vm
+			self.from_double_values(value)
+		else:
+			self.from_double(float(value))
+	elif self.vr == VR_OFFSET:
+		self.from_dataset(value)
+	elif self.vr not in [VR_SQ, VR_PIXSEQ]:
+		self.from_data(value)
+		
+dataelement.set_value = __dicom_dataelement_set_value
+
+
+# __getitem__/__getattr__ warppers ---------------------------------------
+
+def __dicom_dataset___getitem__(self, key):
+	e = self.get_dataelement(key)
+	if e.is_valid():
+		return e.get_value()
+	else:
+		if e.vr in [VR_SL, VR_SS, VR_UL, VR_US, VR_AT, VR_IS]:
+			return e.to_int() # 0
+		elif e.vr in [VR_FL, VR_FD, VR_DS]:
+			return e.to_double() # 0.0
+		elif e.vr in [VR_SQ, VR_OFFSET]:
+			return None
+		else:
+			return e.to_string() # None
+
+dataset.__getitem__ = __dicom_dataset___getitem__
+
+def __dicom_dataset____getattr__(self, key):
+	try:
+		return self.____getattr__(key)
+	except AttributeError, name:
+		tag = find_tag(key)
+		if tag == 0xffffffff:
+			raise AttributeError, name
+		else:
+			return __dicom_dataset___getitem__(self, key)
+
+dataset.____getattr__ = dataset.__getattr__
+dataset.__getattr__ = __dicom_dataset____getattr__
+dicomfile.____getattr__ = dicomfile.__getattr__
+dicomfile.__getattr__ = __dicom_dataset____getattr__
+
+def __dicom_dataelement_to_string(self, defaultvalue=None):
+	if defaultvalue and not self.is_valid():
+		return defaultvalue
+	else:
+		return self.to_string_a()		
+
+dataelement.to_string = __dicom_dataelement_to_string
+
+
+# __setitem__/__setattr__ warppers ---------------------------------------
+
+def __dicom_dataset___setitem__(self, key, value):
+	e = self.get_dataelement(key)
+	if not e.is_valid():
+		e = self.add_dataelement(key)
+		
+	if e.vr == VR_SQ:
+		raise RuntimeError, 'cannot assign value to a dataelement with VR_SQ'
+	
+	e.set_value(value)
+	
+dataset.__setitem__ = __dicom_dataset___setitem__
+
+def __dicom_dataset____setattr__(self, key, value):
+	tag = find_tag(key)
+	if tag == 0xffffffff:
+		self.____setattr__(key, value)
+	else:
+		__dicom_dataset___setitem__(self, key, value)
+
+dataset.____setattr__ = dataset.__setattr__
+dataset.__setattr__ = __dicom_dataset____setattr__
+dicomfile.____setattr__ = dicomfile.__setattr__
+dicomfile.__setattr__ = __dicom_dataset____setattr__
+
+
+# functions convert to PIL image or numpy array --------------------------
+
+def __dicom_dataset_to_pil_image(self):
+	import Image
+	width, height, prec, sgnd, ncomps, bpp, nframes = self.get_image_info()
+	pixeldata = self.get_pixeldata()
+	if not pixeldata:
+		return None
+		
+	if ncomps == 1 and bpp == 1:
+		mode = 'L'
+	elif ncomps == 1 and bpp == 2:
+		mode = 'I;16'
+	elif bpp == 3 and ncomps == 3:
+		mode = 'RGB'
+	else:
+		return None # unsupported
+		
+	if nframes == 1:
+		return Image.fromstring(mode, [width,height], pixeldata)
+	else:
+		framestep = width*height*bpp
+		return [
+			Image.fromstring(
+				mode,
+				[width, height],
+				pixeldata[i*framestep:(i+1)*framestep]
+			)
+			for i in range(nframes)
+		]
+			
+dataset.to_pil_image = __dicom_dataset_to_pil_image
+
+def __dicom_dataset_to_numpy_array(self):
+	import numpy
+	width, height, prec, sgnd, ncomps, bpp, nframes = self.get_image_info()
+	pixeldata = self.get_pixeldata()
+	if not pixeldata:
+		return None
+	if width*height*prec == 0:
+		return None
+		
+	shape = [height, width]
+	if ncomps > 1:
+		shape += [ncomps]
+	if nframes > 1:
+		shape = [nframes] + shape
+	
+	if prec > 8:
+		dtype = numpy.int16 if sgnd else numpy.uint16
+	elif prec > 0:
+		dtype = numpy.int8 if sgnd else numpy.uint8	
+	else:
+		return None
+		
+	ar = numpy.fromstring(pixeldata, dtype=dtype)
+	ar.shape = shape
+	return ar
+			
+dataset.to_numpy_array = __dicom_dataset_to_numpy_array
+
+%}
