@@ -1,4 +1,5 @@
 SET (EXAMPLE_SOURCES
+	getting_started
 	changetsuid
 	dicomfiledump
 	makedicomdir
