@@ -21,9 +21,9 @@ namespace dicom { //------------------------------------------------------
 #include <glob.h>
 #define PATHSEP '/'
 
-std::list<std::string> find_files(const char *pattern)
+stringlist find_files(const char *pattern)
 {
-	std::list<std::string> fnlist;
+	stringlist fnlist;
 
 	glob_t globbuf;
 	globbuf.gl_offs = 0;
@@ -48,10 +48,10 @@ std::list<std::string> find_files(const char *pattern)
 #define PATHSEP '\\'
 
 void process_pattern(
-		std::string base, std::string pat, std::list<std::string> &fnlist);
+		std::string base, std::string pat, stringlist &fnlist);
 
 void listdir_with_pattern(
-		std::string base, std::string pat, std::list<std::string> &fnlist,
+		std::string base, std::string pat, stringlist &fnlist,
 		std::string subpat="")
 {
 	WIN32_FIND_DATA ffd;
@@ -84,7 +84,7 @@ void listdir_with_pattern(
 }
 
 void process_pattern(
-		std::string base, std::string pat, std::list<std::string> &fnlist)
+		std::string base, std::string pat, stringlist &fnlist)
 {
 	while (pat.size() && pat[0] == PATHSEP)
 		pat = pat.substr(1);
@@ -124,10 +124,10 @@ void process_pattern(
 	}
 }
 
-std::list<std::string> find_files(const char *pattern)
+stringlist find_files(const char *pattern)
 {
 	std::string pat(pattern);
-	std::list<std::string> fnlist;
+	stringlist fnlist;
 
 	if (pat.size() >= 2 && pat.substr(0,2) == "\\\\") {
 		// path contains network name '\\computername\share...'
