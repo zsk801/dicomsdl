@@ -491,6 +491,8 @@ void __to_printable_string
 	while (len--) {
 		if (*str == '\"')
 			ss << "\\\"";
+		else if (*str == '\\')
+			ss << "\\\\";
 		else if (isprint((unsigned char)(*str)))
 			ss << *str;
 		else {
