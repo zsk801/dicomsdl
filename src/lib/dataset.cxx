@@ -120,7 +120,6 @@ int dataset::load(void *stream, dicomfile* dfobj,
 						// just assume as UN
 						vr = VR_UN;
 
-					tsuid = UID_IMPLICIT_VR_LITTLE_ENDIAN;
 					break;
 			}
 
